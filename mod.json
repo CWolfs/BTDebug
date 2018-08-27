@@ -1,0 +1,15 @@
+{
+    "Name": "EncounterLayerDataConverter",
+    "Enabled": true,
+
+    "Version": "0.1.0",
+    "Description": "Exports all encounter layer data to JSON",
+    "Author": "CWolf",
+    "Contact": "cwolfs@gmail.com",
+
+    "DLL": "EncounterLayerDataConverter.dll",
+    "DLLEntryPoint": "EncounterLayerDataConverter.Main.Init",
+    "Settings": {
+        "PlaceHolder": false
+    }
+}
