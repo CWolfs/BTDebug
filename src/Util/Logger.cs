@@ -2,7 +2,7 @@ using System.Collections.Generic;
 using HBS.Logging;
 
 /* Thanks to CptMoore for his Logger */
-namespace EncounterLayerDataConverter.Utils {
+namespace EncounterConverter.Utils {
     public static class ILogExtensions {
         public static void SetLevel(this ILog @this, LogLevel level) {
             Logger.SetLoggerLevel(@this.Name, level);

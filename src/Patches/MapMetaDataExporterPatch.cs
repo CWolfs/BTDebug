@@ -11,7 +11,7 @@ using Newtonsoft;
 using Newtonsoft.Json;
 
 // this.Sim.DialogPanel.Show
-namespace EncounterLayerDataConverter {
+namespace EncounterConverter {
   [HarmonyPatch(typeof(MapMetaDataExporter), "LoadEncounterLayerDataV2")]
   public class MapMetaDataExporterPatch {
     static void Prefix(MapMetaDataExporter __instance, EncounterLayerIdentifier encounterLayerIdentifier, DataManager dataManager) {
@@ -28,9 +28,13 @@ namespace EncounterLayerDataConverter {
 			layerByGuid.ReattachReferences();
 
       try {
+        /* 
         File.WriteAllText(Path.ChangeExtension(text, ".json"), JsonConvert.SerializeObject(encounterLayerData, Formatting.Indented, new JsonSerializerSettings {
-          ReferenceLoopHandling = ReferenceLoopHandling.Ignore
+          ReferenceLoopHandling = ReferenceLoopHandling.Ignore,
+          NullValueHandling = NullValueHandling.Include,
         }));
+        */
+        // File.WriteAllText(Path.ChangeExtension(text, ".json"), encounterLayerData.ToJSON());
       } catch (Exception e) {
         Main.Logger.LogDebug(e);
       }

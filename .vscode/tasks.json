@@ -7,7 +7,7 @@
             "type": "process",
             "args": [
                 "build",
-                "D:/Modding/Battletech/EncounterLayerDataConverter/src/EncounterLayerDataConverter.csproj"
+                "D:/Modding/Battletech/EncounterConverter/src/EncounterConverter.csproj"
             ],
             "problemMatcher": "$msCompile"
         }
