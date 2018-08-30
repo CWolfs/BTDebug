@@ -5,19 +5,19 @@ using Harmony;
 using Newtonsoft.Json;
 using System.Reflection;
 
-using EncounterConverter.Utils;
+using BTDebug.Utils;
 
-namespace EncounterConverter {
+namespace BTDebug {
     public class Main {
         public static ILog Logger;
         private static Settings settings;
 
         public static void InitLogger(string modDirectory) {
             Dictionary<string, LogLevel> logLevels = new Dictionary<string, LogLevel> {
-                ["EncounterConverter"] = LogLevel.Debug
+                ["BTDebug"] = LogLevel.Debug
             };
             LogManager.Setup(modDirectory + "/output.log", logLevels);
-            Logger = LogManager.GetLogger("EncounterConverter");
+            Logger = LogManager.GetLogger("BTDebug");
         }
 
         // Entry point into the mod, specified in the `mod.json`
@@ -25,7 +25,7 @@ namespace EncounterConverter {
             try {
                 InitLogger(modDirectory);
 
-                Logger.Log("Loading EncounterConverter settings");
+                Logger.Log("Loading BTDebug settings");
                 settings = JsonConvert.DeserializeObject<Settings>(modSettings);
             } catch (Exception e) {
                 Logger.LogError(e);
@@ -33,7 +33,7 @@ namespace EncounterConverter {
                 settings = new Settings();
             }
 
-            HarmonyInstance harmony = HarmonyInstance.Create("co.uk.cwolf.EncounterConverter");
+            HarmonyInstance harmony = HarmonyInstance.Create("co.uk.cwolf.BTDebug");
             harmony.PatchAll(Assembly.GetExecutingAssembly());
         }
     }

@@ -6,13 +6,13 @@ using Harmony;
 using BattleTech;
 
 // this.Sim.DialogPanel.Show
-namespace EncounterConverter {
+namespace BTDebug {
   [HarmonyPatch(typeof(UnityGameInstance), "Update")]
   public class UnityGameInstancePatch {
     static void Postfix(UnityGameInstance __instance) {
       if (Input.GetKeyDown(KeyCode.P)) {
         string indentation = "";
-        Main.Logger.LogDebug($"[EncounterConverter] Outting all game objects and components");
+        Main.Logger.LogDebug($"[BTDebug] Outting all game objects and components");
         GameObject[] rootGos = UnityEngine.SceneManagement.SceneManager.GetActiveScene().GetRootGameObjects();
         foreach (GameObject go in rootGos) {
           RecursivePrintGameObject(go, indentation);

@@ -1,6 +1,10 @@
-# Encounter Converter
+# BattleTech Debug Mod
 
-A HBS BattleTech mod to convert EncounterLayerData into JSON. This is a WIP and PoC that does not currently work.
+A HBS BattleTech mod to provide debug related functionality
+
+## Features
+
+* Scene Dump - Press 'p' to dump the scene tree hierarchy into the log file
 
 ## Author
 

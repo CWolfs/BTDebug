@@ -11,7 +11,7 @@ using Newtonsoft;
 using Newtonsoft.Json;
 
 // this.Sim.DialogPanel.Show
-namespace EncounterConverter {
+namespace BTDebug {
   [HarmonyPatch(typeof(MapMetaDataExporter), "LoadEncounterLayerDataV2")]
   public class MapMetaDataExporterPatch {
     static void Prefix(MapMetaDataExporter __instance, EncounterLayerIdentifier encounterLayerIdentifier, DataManager dataManager) {
