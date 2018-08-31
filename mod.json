@@ -1,0 +1,15 @@
+{
+    "Name": "BTDebug",
+    "Enabled": true,
+
+    "Version": "0.1.0",
+    "Description": "Exports all encounter layer data to JSON",
+    "Author": "CWolf",
+    "Contact": "cwolfs@gmail.com",
+
+    "DLL": "BTDebug.dll",
+    "DLLEntryPoint": "BTDebug.Main.Init",
+    "Settings": {
+        "PlaceHolder": false
+    }
+}
