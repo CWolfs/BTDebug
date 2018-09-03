@@ -18,6 +18,17 @@ namespace BTDebug {
           RecursivePrintGameObject(go, indentation);
         }
       }
+
+      if (Input.GetKeyDown(KeyCode.B)) {
+        AssetBundleTest();
+      }
+    }
+
+    static void AssetBundleTest() {
+      Main.Logger.LogDebug($"[BTDebug] Loading test asset bundle");
+      AssetBundle bundle = AssetBundle.LoadFromFile($"{Main.Path}/bundles/debug");
+      GameObject prefab = bundle.LoadAsset("DebugHierarchyAndInspector") as GameObject;
+      Main.Logger.LogDebug($"[BTDebug] Finished loading test asset bundle");
     }
 
     static void RecursivePrintGameObject(GameObject go, string indentation) {

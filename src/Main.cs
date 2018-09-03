@@ -11,6 +11,7 @@ namespace BTDebug {
     public class Main {
         public static ILog Logger;
         private static Settings settings;
+        public static string Path { get; private set; }
 
         public static void InitLogger(string modDirectory) {
             Dictionary<string, LogLevel> logLevels = new Dictionary<string, LogLevel> {
@@ -18,6 +19,7 @@ namespace BTDebug {
             };
             LogManager.Setup(modDirectory + "/output.log", logLevels);
             Logger = LogManager.GetLogger("BTDebug");
+            Path = modDirectory;
         }
 
         // Entry point into the mod, specified in the `mod.json`
