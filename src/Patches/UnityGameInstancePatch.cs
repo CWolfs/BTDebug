@@ -1,16 +1,17 @@
 using UnityEngine;
 using System;
 using System.IO;
+using System.Linq;
+using System.Reflection;
 using Harmony;
 
 using BattleTech;
 
-// this.Sim.DialogPanel.Show
 namespace BTDebug {
   [HarmonyPatch(typeof(UnityGameInstance), "Update")]
   public class UnityGameInstancePatch {
     static void Postfix(UnityGameInstance __instance) {
-      if (Input.GetKeyDown(KeyCode.P)) {
+      if ((Input.GetKey(KeyCode.LeftAlt) || Input.GetKey(KeyCode.RightAlt)) && Input.GetKeyDown(KeyCode.D)) {
         string indentation = "";
         Main.Logger.LogDebug($"[BTDebug] Outting all game objects and components");
         GameObject[] rootGos = UnityEngine.SceneManagement.SceneManager.GetActiveScene().GetRootGameObjects();
@@ -18,11 +19,19 @@ namespace BTDebug {
           RecursivePrintGameObject(go, indentation);
         }
       }
+
+      if ((Input.GetKey(KeyCode.LeftAlt) || Input.GetKey(KeyCode.RightAlt)) && Input.GetKeyDown(KeyCode.I)) {
+        InspectorManager.GetInstance().ToggleInspector();
+      }
+
+      if ((Input.GetKey(KeyCode.LeftAlt) || Input.GetKey(KeyCode.RightAlt)) && Input.GetKeyDown(KeyCode.A)) {
+        InspectorManager.GetInstance().ToggleDebugMode();
+      }
     }
 
     static void RecursivePrintGameObject(GameObject go, string indentation) {
       if (go.activeInHierarchy) {
-        Main.Logger.LogDebug($"{indentation}- [GO] {go.name}");
+        Main.Logger.LogDebug($"{indentation}- [GO] {go.name} - {go.tag} - {go.layer}");
         Component[] components = go.GetComponents<Component>();
         indentation += "  ";
         foreach (Component component in components) {
@@ -35,13 +44,6 @@ namespace BTDebug {
             Collider col = (Collider)component;
             if (!col.enabled) continue;
           }
-
-          /*
-          if (component is Rigidbody) {
-            Rigidbody rb = (Rigidbody)component;
-            if (rb.collisionDetectionMode == CollisionDetectionMode.Discrete || rb.isKinematic) continue;
-          }
-          */
 
           Main.Logger.LogDebug($"{indentation}- [Component] {component.GetType().Name}");
         }

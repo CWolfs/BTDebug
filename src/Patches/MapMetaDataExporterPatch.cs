@@ -10,7 +10,6 @@ using BattleTech.Serialization;
 using Newtonsoft;
 using Newtonsoft.Json;
 
-// this.Sim.DialogPanel.Show
 namespace BTDebug {
   [HarmonyPatch(typeof(MapMetaDataExporter), "LoadEncounterLayerDataV2")]
   public class MapMetaDataExporterPatch {
