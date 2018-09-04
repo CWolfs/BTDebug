@@ -23,6 +23,10 @@ namespace BTDebug {
       if ((Input.GetKey(KeyCode.LeftAlt) || Input.GetKey(KeyCode.RightAlt)) && Input.GetKeyDown(KeyCode.I)) {
         InspectorManager.GetInstance().ToggleInspector();
       }
+
+      if ((Input.GetKey(KeyCode.LeftAlt) || Input.GetKey(KeyCode.RightAlt)) && Input.GetKeyDown(KeyCode.A)) {
+        InspectorManager.GetInstance().ToggleDebugMode();
+      }
     }
 
     static void RecursivePrintGameObject(GameObject go, string indentation) {

@@ -11,7 +11,7 @@ using BTDebug.Utils;
 namespace BTDebug {
     public class Main {
         public static ILog Logger;
-        private static Settings settings;
+        public static Settings Settings { get; private set; }
         public static Assembly BTDebugAssembly { get; set; } 
         public static AssetBundle BTDebugBundle { get; set; }
         public static string Path { get; private set; }
@@ -39,14 +39,14 @@ namespace BTDebug {
                 InitLogger(modDirectory);
 
                 Logger.Log("Loading BTDebug settings");
-                settings = JsonConvert.DeserializeObject<Settings>(modSettings);
+                Settings = JsonConvert.DeserializeObject<Settings>(modSettings);
 
                 LoadAssemblies();
                 LoadAssetBundles();
             } catch (Exception e) {
                 Logger.LogError(e);
                 Logger.Log("Error loading mod settings - using defaults.");
-                settings = new Settings();
+                Settings = new Settings();
             }
 
             HarmonyInstance harmony = HarmonyInstance.Create("co.uk.cwolf.BTDebug");
