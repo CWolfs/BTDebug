@@ -41,7 +41,7 @@ namespace BTDebug {
         LoadedAssembly = true;
       }
 
-      GameObject prefab = Bundle.LoadAsset("DebugInspector") as GameObject;
+      GameObject prefab = Bundle.LoadAsset("BTDebugInspector") as GameObject;
       GameObject inspector = MonoBehaviour.Instantiate(prefab, Vector3.zero, Quaternion.identity);
       LayerTools.SetLayerRecursively(inspector, 17);
 
