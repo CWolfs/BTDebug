@@ -1,3 +1,4 @@
+using UnityEngine;
 using System;
 using System.Collections.Generic;
 using HBS.Logging;
@@ -11,6 +12,8 @@ namespace BTDebug {
     public class Main {
         public static ILog Logger;
         private static Settings settings;
+        public static Assembly BTDebugAssembly { get; set; } 
+        public static AssetBundle BTDebugBundle { get; set; }
         public static string Path { get; private set; }
 
         public static void InitLogger(string modDirectory) {
@@ -22,6 +25,14 @@ namespace BTDebug {
             Path = modDirectory;
         }
 
+        public static void LoadAssemblies() {
+            BTDebugAssembly = Assembly.LoadFile($"{Main.Path}/bundles/BTDebug-Library.dll");
+        }
+
+        public static void LoadAssetBundles() {
+            BTDebugBundle = AssetBundle.LoadFromFile($"{Main.Path}/bundles/btdebug-bundle");
+        }
+
         // Entry point into the mod, specified in the `mod.json`
         public static void Init(string modDirectory, string modSettings) {
             try {
@@ -29,6 +40,9 @@ namespace BTDebug {
 
                 Logger.Log("Loading BTDebug settings");
                 settings = JsonConvert.DeserializeObject<Settings>(modSettings);
+
+                LoadAssemblies();
+                LoadAssetBundles();
             } catch (Exception e) {
                 Logger.LogError(e);
                 Logger.Log("Error loading mod settings - using defaults.");

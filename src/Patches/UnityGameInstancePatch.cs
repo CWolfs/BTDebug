@@ -7,18 +7,11 @@ using Harmony;
 
 using BattleTech;
 
-using BTDebug.Utils;
-
-// this.Sim.DialogPanel.Show
 namespace BTDebug {
   [HarmonyPatch(typeof(UnityGameInstance), "Update")]
   public class UnityGameInstancePatch {
-    private static bool LoadedAssembly { get; set; } = false;
-    private static Assembly DebugAssembly { get; set; } 
-    private static AssetBundle Bundle { get; set; }
-
     static void Postfix(UnityGameInstance __instance) {
-      if (Input.GetKeyDown(KeyCode.P)) {
+      if ((Input.GetKey(KeyCode.LeftAlt) || Input.GetKey(KeyCode.RightAlt)) && Input.GetKeyDown(KeyCode.D)) {
         string indentation = "";
         Main.Logger.LogDebug($"[BTDebug] Outting all game objects and components");
         GameObject[] rootGos = UnityEngine.SceneManagement.SceneManager.GetActiveScene().GetRootGameObjects();
@@ -27,25 +20,9 @@ namespace BTDebug {
         }
       }
 
-      if (Input.GetKeyDown(KeyCode.I)) {
-        AssetBundleTest();
+      if ((Input.GetKey(KeyCode.LeftAlt) || Input.GetKey(KeyCode.RightAlt)) && Input.GetKeyDown(KeyCode.I)) {
+        InspectorManager.GetInstance().ToggleInspector();
       }
-    }
-
-    static void AssetBundleTest() {
-      Main.Logger.LogDebug($"[BTDebug] Loading test asset bundle");
-      
-      if (!LoadedAssembly) {
-        DebugAssembly = Assembly.LoadFile($"{Main.Path}/bundles/BTDebug-Library.dll");
-        Bundle = AssetBundle.LoadFromFile($"{Main.Path}/bundles/btdebug-bundle");
-        LoadedAssembly = true;
-      }
-
-      GameObject prefab = Bundle.LoadAsset("BTDebugInspector") as GameObject;
-      GameObject inspector = MonoBehaviour.Instantiate(prefab, Vector3.zero, Quaternion.identity);
-      LayerTools.SetLayerRecursively(inspector, 17);
-
-      Main.Logger.LogDebug($"[BTDebug] Finished loading test asset bundle");
     }
 
     static void RecursivePrintGameObject(GameObject go, string indentation) {
@@ -63,13 +40,6 @@ namespace BTDebug {
             Collider col = (Collider)component;
             if (!col.enabled) continue;
           }
-
-          /*
-          if (component is Rigidbody) {
-            Rigidbody rb = (Rigidbody)component;
-            if (rb.collisionDetectionMode == CollisionDetectionMode.Discrete || rb.isKinematic) continue;
-          }
-          */
 
           Main.Logger.LogDebug($"{indentation}- [Component] {component.GetType().Name}");
         }
