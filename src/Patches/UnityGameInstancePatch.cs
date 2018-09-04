@@ -1,14 +1,22 @@
 using UnityEngine;
 using System;
 using System.IO;
+using System.Linq;
+using System.Reflection;
 using Harmony;
 
 using BattleTech;
+
+using BTDebug.Utils;
 
 // this.Sim.DialogPanel.Show
 namespace BTDebug {
   [HarmonyPatch(typeof(UnityGameInstance), "Update")]
   public class UnityGameInstancePatch {
+    private static bool LoadedAssembly { get; set; } = false;
+    private static Assembly DebugAssembly { get; set; } 
+    private static AssetBundle Bundle { get; set; }
+
     static void Postfix(UnityGameInstance __instance) {
       if (Input.GetKeyDown(KeyCode.P)) {
         string indentation = "";
@@ -19,21 +27,32 @@ namespace BTDebug {
         }
       }
 
-      if (Input.GetKeyDown(KeyCode.B)) {
+      if (Input.GetKeyDown(KeyCode.I)) {
         AssetBundleTest();
       }
     }
 
     static void AssetBundleTest() {
       Main.Logger.LogDebug($"[BTDebug] Loading test asset bundle");
-      AssetBundle bundle = AssetBundle.LoadFromFile($"{Main.Path}/bundles/debug");
-      GameObject prefab = bundle.LoadAsset("DebugHierarchyAndInspector") as GameObject;
+      
+      if (!LoadedAssembly) {
+        DebugAssembly = Assembly.LoadFile($"{Main.Path}/bundles/DebugInspector.dll");
+        Bundle = AssetBundle.LoadFromFile($"{Main.Path}/bundles/debug");
+        LoadedAssembly = true;
+      }
+
+      GameObject prefab = Bundle.LoadAsset("DebugInspector") as GameObject;
+      GameObject canvas = GameObject.Find("canvas");
+      GameObject inspector = MonoBehaviour.Instantiate(prefab, Vector3.zero, Quaternion.identity);
+      inspector.transform.SetParent(canvas.transform, false);
+      LayerTools.SetLayerRecursively(inspector, 17);
+
       Main.Logger.LogDebug($"[BTDebug] Finished loading test asset bundle");
     }
 
     static void RecursivePrintGameObject(GameObject go, string indentation) {
       if (go.activeInHierarchy) {
-        Main.Logger.LogDebug($"{indentation}- [GO] {go.name}");
+        Main.Logger.LogDebug($"{indentation}- [GO] {go.name} - {go.tag} - {go.layer}");
         Component[] components = go.GetComponents<Component>();
         indentation += "  ";
         foreach (Component component in components) {
