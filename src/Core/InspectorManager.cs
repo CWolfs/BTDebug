@@ -70,13 +70,13 @@ namespace BTDebug {
 
     public void HideInspector() {
       Main.Logger.LogDebug($"[BTDebug] Hiding inspector");
-      inspectorGO.SetActive(false);
-      IsInspectorShowing = false;  
+      if (inspectorGO) inspectorGO.SetActive(false);
+      IsInspectorShowing = false;
     }
 
     public void RemoveInspector() {
       Main.Logger.LogDebug($"[BTDebug] Removing inspector");
-      MonoBehaviour.Destroy(inspectorGO);
+      if (inspectorGO) MonoBehaviour.Destroy(inspectorGO);
       IsInspectorShowing = false;
     }
   }
