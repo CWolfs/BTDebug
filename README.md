@@ -4,8 +4,9 @@ A HBS BattleTech mod to provide debug related functionality
 
 ## Features
 
-* Scene Dump - Press 'p' to dump the scene tree hierarchy into the log file. It dumps only active gameobjects and enabled components.
-* Scene Inspector - Press 'i' to load the inspector
+* __Scene Dump__ - `alt + d` - Dumps the scene tree hierarchy into the log file. It dumps only active gameobjects and enabled components.
+* __Scene Inspector__ - `alt + i` - Toggles the scene hierarchy viewer and inspector on and off
+    * __Toggle Debug Mode__ - `alt + a` - Toggles the inspector debug mode on and off. Debug mode shows more hidden variables and properties.
 
 ## Special Thanks
 
