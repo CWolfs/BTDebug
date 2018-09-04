@@ -36,15 +36,13 @@ namespace BTDebug {
       Main.Logger.LogDebug($"[BTDebug] Loading test asset bundle");
       
       if (!LoadedAssembly) {
-        DebugAssembly = Assembly.LoadFile($"{Main.Path}/bundles/DebugInspector.dll");
-        Bundle = AssetBundle.LoadFromFile($"{Main.Path}/bundles/debug");
+        DebugAssembly = Assembly.LoadFile($"{Main.Path}/bundles/BTDebug-Library.dll");
+        Bundle = AssetBundle.LoadFromFile($"{Main.Path}/bundles/btdebug-bundle");
         LoadedAssembly = true;
       }
 
       GameObject prefab = Bundle.LoadAsset("DebugInspector") as GameObject;
-      GameObject canvas = GameObject.Find("canvas");
       GameObject inspector = MonoBehaviour.Instantiate(prefab, Vector3.zero, Quaternion.identity);
-      inspector.transform.SetParent(canvas.transform, false);
       LayerTools.SetLayerRecursively(inspector, 17);
 
       Main.Logger.LogDebug($"[BTDebug] Finished loading test asset bundle");
