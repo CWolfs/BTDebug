@@ -8,8 +8,8 @@ A HBS BattleTech mod to provide debug related functionality
 * __Scene Inspector__ - `alt + i` - Toggles the scene hierarchy viewer and inspector on and off
     * __Toggle Debug Mode__ - `alt + a` - Toggles the inspector debug mode on and off. Debug mode shows more hidden variables and properties.
 
-![Example Conversation Edit](./docs/images/Sim.png)
-![Example Speaker Override](./docs/images/Encounter.png)
+![Example Sim Game Inspector](./docs/images/Sim.png)
+![Example Combat Inspectr](./docs/images/Encounter.png)
 
 ## Special Thanks
 

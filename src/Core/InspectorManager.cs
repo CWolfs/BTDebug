@@ -20,7 +20,7 @@ namespace BTDebug {
       return instance;
     }
 
-    public InspectorManager() {
+    private InspectorManager() {
       SetDebugMode(Main.Settings.inspectorDebugMode);
     }
 
