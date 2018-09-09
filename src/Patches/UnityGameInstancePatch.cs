@@ -27,6 +27,11 @@ namespace BTDebug {
       if ((Input.GetKey(KeyCode.LeftAlt) || Input.GetKey(KeyCode.RightAlt)) && Input.GetKeyDown(KeyCode.A)) {
         InspectorManager.GetInstance().ToggleDebugMode();
       }
+      
+      if ((Input.GetKey(KeyCode.LeftAlt) || Input.GetKey(KeyCode.RightAlt)) && Input.GetKeyDown(KeyCode.F)) {
+        Main.Logger.LogDebug($"[BTDebug] Toggling Fog of War");
+        FogOfWarManager.GetInstance().ToggleFogOfWar();
+      }
     }
 
     static void RecursivePrintGameObject(GameObject go, string indentation) {
