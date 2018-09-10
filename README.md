@@ -8,6 +8,7 @@ A HBS BattleTech mod to provide debug related functionality
 * __Scene Inspector__ - `alt + i` - Toggles the scene hierarchy viewer and inspector on and off
     * __Toggle Debug Mode__ - `alt + a` - Toggles the inspector debug mode on and off. Debug mode shows more hidden variables and properties.
 * __Toggle Fog of War__ - `alt + f` - Toggles the fog of war on and off. Optionally, can keep the dark overlay with a setting in the mod.json
+* __Toggle Freeform Camera__ - `alt + c` - Toggles between the normal BT camera and a debug freeform fly camera
 
 ![Example Sim Game Inspector](./docs/images/Sim.png)
 ![Example Combat Inspector](./docs/images/Encounter.png)
