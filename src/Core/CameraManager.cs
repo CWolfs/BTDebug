@@ -48,6 +48,7 @@ namespace BTDebug {
         originalCameraFarClipPlane = Camera.farClipPlane;
         Camera.fieldOfView = 60;
         Camera.farClipPlane = 9999;
+        CameraControl.DEBUG_TakeCompleteControl = true;
         CameraControl.enabled = false;
         
         if (!FreeFormCamera) {
@@ -59,6 +60,7 @@ namespace BTDebug {
       } else {
         Main.Logger.LogDebug($"[BTDebug] Turning Freeform Camera is OFF");
         CameraControl.enabled = true;
+        CameraControl.DEBUG_TakeCompleteControl = false;
         Camera.fieldOfView = originalCameraFoV;
         Camera.farClipPlane = originalCameraFarClipPlane;
         if (FreeFormCamera) FreeFormCamera.enabled = false;

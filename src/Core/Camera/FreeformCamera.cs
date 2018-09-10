@@ -12,76 +12,47 @@ namespace BTDebug.BTCamera {
     private Transform mTransform;
     private float mouseAxis = 0f;
 
-    // freeform
-    private float sensitivityX = 5f;
-    private float sensitivityY = 5f;
-    
-    private float minimumX = -360f;
-    private float maximumX = 360f;
-    
-    private float minimumY = -360f;
-    private float maximumY = 360f;
-    
-    private float rotationX = 0F;
-    private float rotationY = 0F;
-    
-    private Quaternion originalRotation;
+    private const float MINIMUM_ANGLE = -360f;
+    private const float MAXIMUM_ANGLE = 360f;
 
-    // private float mainSpeed = 10.0f;  // Regular speed
-    private float mainSpeed = 1;
-    private float shiftAdd = 20.0f;   // Multiplied by how long shift is held.  Basically running
-    private float maxShift = 100.0f;  // Maximum speed when holding shift
+    private float mainSpeed = 50.0f;  // Regular speed
+    private float shiftAdd = 30.0f;   // Multiplied by how long shift is held.  Basically running
+    private float maxShift = 300.0f;  // Maximum speed when holding shift
     private float totalRun = 1.0f;
-    // end freeform
+
+    private Vector3 angles;
+    public float speed = 1.0f;
+    public float fastSpeed = 2.0f;
+    public float mouseSpeed = 4.0f;
 
     private Vector3 camLastPos = Vector3.one;
 
     void OnEnable() {
-      // mTransform = transform;
-      // originalRotation = Quaternion.LookRotation(Vector3.forward);
-      //originalRotation = Quaternion.LookRotation(transform.forward);
+      mTransform = transform;
+
+      Vector3 localEulerAngles = mTransform.localEulerAngles;
+      angles.x = localEulerAngles.x;
+      angles.y = localEulerAngles.y;
     }
     
     // Update is called once per frame
     void Update() {
       if (CameraManager.GetInstance().IsFreeformCameraEnabled) {
         MouseLook();
-        // XYMiddleMouseMovement();
-        // Zoom();
-        // camLastPos = transform.localPosition;
+        XYMiddleMouseMovement();
+        Zoom();
+        camLastPos = transform.localPosition;
       }
     }
 
     private void MouseLook() {
       if (Input.GetMouseButton(1)) {
         // Read the mouse input axis
-        // rotationX += Input.GetAxis("Mouse X") * sensitivityX;
-        // rotationY += Input.GetAxis("Mouse Y") * sensitivityY;
-        
-        // rotationX = ClampAngle(rotationX, minimumX, maximumX);
-        // rotationY = ClampAngle(rotationY, minimumY, maximumY);
-        
-        // Quaternion xQuaternion = Quaternion.AngleAxis(rotationX, Vector3.up);
-        // Quaternion yQuaternion = Quaternion.AngleAxis(rotationY, -Vector3.right);
-        // mTransform.localRotation = originalRotation * xQuaternion * yQuaternion;
-        Vector3 angles = transform.eulerAngles;
-        float angleX = Input.GetAxis("Mouse Y") * sensitivityY;
-        angleX = ClampAngle(angleX, minimumX, maximumX);
-        angles.x -= angleX;
+        angles.x -= Input.GetAxis("Mouse Y") * mouseSpeed;
+        angles.y += Input.GetAxis("Mouse X") * mouseSpeed;
+        transform.eulerAngles = angles;
 
-        float angleY = Input.GetAxis("Mouse X") * sensitivityX;
-        angleY = ClampAngle(angleY, minimumY, maximumY);
-        angles.y += angleY;
-
-        transform.localEulerAngles = angles;
-
-        float moveSpeed = Input.GetKey(KeyCode.LeftShift) ? mainSpeed * 2 : mainSpeed;
-        transform.localPosition +=
-            Input.GetAxis("Horizontal") * moveSpeed * transform.right +
-            Input.GetAxis("Vertical") * moveSpeed * transform.forward;
-        
         // Keyboard commands
-        /*
         Vector3 p = GetBaseInput();
         if (Input.GetKey(KeyCode.LeftShift)) {
           totalRun += Time.deltaTime;
@@ -104,7 +75,6 @@ namespace BTDebug.BTCamera {
         } else {
           mTransform.Translate(p);
         }
-        */
       }
     }
 
@@ -126,8 +96,8 @@ namespace BTDebug.BTCamera {
     }
     
     public static float ClampAngle(float angle, float min, float max) {
-      if (angle < -360F) angle += 360F;
-      if (angle > 360F) angle -= 360F;
+      if (angle < MINIMUM_ANGLE) angle += MAXIMUM_ANGLE;
+      if (angle > MAXIMUM_ANGLE) angle -= MAXIMUM_ANGLE;
       return Mathf.Clamp (angle, min, max);
     }
 
