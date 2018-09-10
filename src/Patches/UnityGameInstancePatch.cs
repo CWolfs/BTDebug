@@ -32,6 +32,11 @@ namespace BTDebug {
         Main.Logger.LogDebug($"[BTDebug] Toggling Fog of War");
         FogOfWarManager.GetInstance().ToggleFogOfWar();
       }
+
+       if ((Input.GetKey(KeyCode.LeftAlt) || Input.GetKey(KeyCode.RightAlt)) && Input.GetKeyDown(KeyCode.C)) {
+        Main.Logger.LogDebug($"[BTDebug] Toggling Freeform Camera");
+        CameraManager.GetInstance().ToggleFreeformCamera();
+      }
     }
 
     static void RecursivePrintGameObject(GameObject go, string indentation) {
