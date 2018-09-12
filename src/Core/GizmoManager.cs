@@ -12,17 +12,22 @@ using BTDebug.Utils;
 
 namespace BTDebug {
   public class GizmoManager {
+    private enum SpawnType { PLAYER_MECH, ENEMY_MECH, ENEMY_TURRET };
     private static GizmoManager instance;
 
     public bool IsGizmoModeActive { get; private set; } = false;
     
     private GameObject encounterLayerParentGO;
+    private HexGrid hexGrid;
 
     private Material regionMaterial;
     private List<GameObject> regionPointRepresentations = new List<GameObject>();
 
     private Material spawnAreaMaterial;
     private List<GameObject> spawnerRepresentations = new List<GameObject>();
+
+    private Material playerMechSpawnMaterial;
+    private List<GameObject> playerMechSpawnRepresentations = new List<GameObject>();
 
     private GameObject activeEncounter;
     private GameObject chunkPlayerLance;
@@ -39,10 +44,14 @@ namespace BTDebug {
       regionMaterial.color = Color.magenta;
 
       spawnAreaMaterial = new Material(Shader.Find("Unlit/BT-Stars"));
+
+      playerMechSpawnMaterial = new Material(Shader.Find("UI/DefaultBackground"));
+      playerMechSpawnMaterial.color = Color.blue;
     }
 
     public void ToggleGizmos() {
       if (!encounterLayerParentGO) encounterLayerParentGO = GameObject.Find("EncounterLayerParent");
+      if (hexGrid == null) hexGrid = ReflectionHelper.GetPrivateStaticField(typeof(WorldPointGameLogic), "hexGrid") as HexGrid;
 
       if (IsGizmoModeActive) {
         DisableRegions();
@@ -97,7 +106,6 @@ namespace BTDebug {
       placeholderPoint.transform.localPosition = Vector3.zero;
 
       Vector3 position = spawnerPlayerLance.transform.position;
-      HexGrid hexGrid = ReflectionHelper.GetPrivateStaticField(typeof(WorldPointGameLogic), "hexGrid") as HexGrid;
       Vector3 hexPosition = hexGrid.GetClosestPointOnGrid(position);
       placeholderPoint.transform.position = hexPosition;
 
@@ -105,12 +113,41 @@ namespace BTDebug {
       placeholderPoint.GetComponent<Renderer>().sharedMaterial = spawnAreaMaterial;
 
       spawnerRepresentations.Add(placeholderPoint);
+
+      foreach (Transform t in spawnerPlayerLance.transform) {
+        GameObject mechSpawn = t.gameObject;
+        if (mechSpawn.name.Contains("SpawnPoint")) {
+          GameObject gizmo = EnableSpawn(mechSpawn, SpawnType.PLAYER_MECH);
+          playerMechSpawnRepresentations.Add(gizmo);
+        }
+      }
     }
 
     private void DisablePlayerLanceSpawn() {
       foreach (GameObject spawnerRepresentations in spawnerRepresentations) {
         MonoBehaviour.Destroy(spawnerRepresentations);
       }
+
+      foreach(GameObject playerMechSpawnRepresentation in playerMechSpawnRepresentations) {
+        MonoBehaviour.Destroy(playerMechSpawnRepresentation);
+      }
+    }
+
+    private GameObject EnableSpawn(GameObject target, SpawnType type) {
+      GameObject placeholderPoint = GameObject.CreatePrimitive(PrimitiveType.Cylinder);
+      placeholderPoint.transform.parent = target.transform;
+      placeholderPoint.transform.localPosition = Vector3.zero;
+
+      Vector3 position = target.transform.position;
+      Vector3 hexPosition = hexGrid.GetClosestPointOnGrid(position);
+      placeholderPoint.transform.position = hexPosition;
+      placeholderPoint.transform.localScale = new Vector3(10, 10, 10);
+
+      if (type == SpawnType.PLAYER_MECH) {
+        placeholderPoint.GetComponent<Renderer>().sharedMaterial = playerMechSpawnMaterial;
+      }
+
+      return placeholderPoint;
     }
 
     private GameObject GetActiveEncounterGameObject() {
