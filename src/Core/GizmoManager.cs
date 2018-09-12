@@ -7,6 +7,7 @@ using RuntimeInspectorNamespace;
 
 using BattleTech;
 using BattleTech.Rendering;
+using BattleTech.Designed;
 
 using BTDebug.Utils;
 
@@ -33,6 +34,7 @@ namespace BTDebug {
     private GameObject chunkPlayerLance;
     private GameObject spawnerPlayerLance;
     private List<GameObject> playerLanceSpawnPoints = new List<GameObject>();
+    private GameObject boundary;
 
     public static GizmoManager GetInstance() { 
       if (instance == null) instance = new GizmoManager();
@@ -56,10 +58,12 @@ namespace BTDebug {
       if (IsGizmoModeActive) {
         DisableRegions();
         DisableSpawns();
+        DisableBoundary();
         IsGizmoModeActive = false;
       } else {
         EnableRegions();
         EnableSpawns();
+        EnableBoundary();
         IsGizmoModeActive = true;
       }
     }
@@ -148,6 +152,25 @@ namespace BTDebug {
       }
 
       return placeholderPoint;
+    }
+
+    private void EnableBoundary() {
+      GameObject chunkBoundaryRect = activeEncounter.transform.Find("Chunk_EncounterBoundary").gameObject;
+      GameObject boundary = chunkBoundaryRect.transform.Find("EncounterBoundaryRect").gameObject;
+      EncounterBoundaryChunkGameLogic chunkBoundaryLogic = chunkBoundaryRect.GetComponent<EncounterBoundaryChunkGameLogic>();
+      EncounterBoundaryRectGameLogic boundaryLogic = boundary.GetComponent<EncounterBoundaryRectGameLogic>();
+      Rect boundaryRec = chunkBoundaryLogic.GetEncounterBoundaryRectBounds();
+
+      GameObject placeholderPoint = GameObject.CreatePrimitive(PrimitiveType.Cube);
+      placeholderPoint.transform.parent = boundary.transform;
+      placeholderPoint.transform.localPosition = Vector3.zero;
+      placeholderPoint.transform.localScale = new Vector3(boundaryRec.width, boundaryRec.height, boundaryRec.width);
+
+      boundary = placeholderPoint;
+    }
+
+    private void DisableBoundary() {
+      MonoBehaviour.Destroy(boundary);
     }
 
     private GameObject GetActiveEncounterGameObject() {
