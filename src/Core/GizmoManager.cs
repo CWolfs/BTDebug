@@ -21,6 +21,9 @@ namespace BTDebug {
     private Material regionMaterial;
     private List<GameObject> regionPointRepresentations = new List<GameObject>();
 
+    private Material spawnAreaMaterial;
+    private List<GameObject> spawnerRepresentations = new List<GameObject>();
+
     private GameObject activeEncounter;
     private GameObject chunkPlayerLance;
     private GameObject spawnerPlayerLance;
@@ -34,6 +37,8 @@ namespace BTDebug {
     private GizmoManager() {
       regionMaterial = new Material(Shader.Find("UI/DefaultBackground"));
       regionMaterial.color = Color.magenta;
+
+      spawnAreaMaterial = new Material(Shader.Find("Unlit/BT-Stars"));
     }
 
     public void ToggleGizmos() {
@@ -57,7 +62,7 @@ namespace BTDebug {
         placeholderPoint.transform.parent = regionPoint.transform;
         placeholderPoint.transform.position = regionPoint.Position;
         placeholderPoint.transform.localScale = new Vector3(5, 5, 5);
-        Material mat = placeholderPoint.GetComponent<Renderer>().material;
+
         placeholderPoint.GetComponent<Renderer>().sharedMaterial = regionMaterial;
         regionPointRepresentations.Add(placeholderPoint);
       }
@@ -83,7 +88,7 @@ namespace BTDebug {
     }
 
     private void DisableSpawns() {
-
+      DisablePlayerLanceSpawn();
     }
 
     private void EnablePlayerLanceSpawn() {
@@ -97,8 +102,15 @@ namespace BTDebug {
       placeholderPoint.transform.position = hexPosition;
 
       placeholderPoint.transform.localScale = new Vector3(100, 100, 100);
-      Material mat = placeholderPoint.GetComponent<Renderer>().material;
-      placeholderPoint.GetComponent<Renderer>().sharedMaterial = regionMaterial;
+      placeholderPoint.GetComponent<Renderer>().sharedMaterial = spawnAreaMaterial;
+
+      spawnerRepresentations.Add(placeholderPoint);
+    }
+
+    private void DisablePlayerLanceSpawn() {
+      foreach (GameObject spawnerRepresentations in spawnerRepresentations) {
+        MonoBehaviour.Destroy(spawnerRepresentations);
+      }
     }
 
     private GameObject GetActiveEncounterGameObject() {
