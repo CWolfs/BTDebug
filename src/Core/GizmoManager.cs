@@ -34,7 +34,9 @@ namespace BTDebug {
     private GameObject chunkPlayerLance;
     private GameObject spawnerPlayerLance;
     private List<GameObject> playerLanceSpawnPoints = new List<GameObject>();
-    private GameObject boundary;
+
+    private GameObject boundaryRepresemtation;
+    private Material boundaryMaterial;
 
     public static GizmoManager GetInstance() { 
       if (instance == null) instance = new GizmoManager();
@@ -49,6 +51,17 @@ namespace BTDebug {
 
       playerMechSpawnMaterial = new Material(Shader.Find("UI/DefaultBackground"));
       playerMechSpawnMaterial.color = Color.blue;
+
+      boundaryMaterial = new Material(Shader.Find("BattleTech/VFX/Distortion"));
+      boundaryMaterial.color = new Color(255f / 255f, 100f / 255f, 100f / 255f, 80f / 255f);
+    }
+
+    public void UpdateBoundaryColour() {
+      if (FogOfWarManager.GetInstance().IsFogOfWarOn) {
+        boundaryMaterial.color = new Color(255f / 255f, 100f / 255f, 100f / 255f, 80f / 255f);  
+      } else {
+        boundaryMaterial.color = new Color(255f / 255f, 100f / 255f, 100f / 255f, 140f / 255f);
+      }
     }
 
     public void ToggleGizmos() {
@@ -72,6 +85,7 @@ namespace BTDebug {
       RegionPointGameLogic[] regionPoints = MonoBehaviour.FindObjectsOfType<RegionPointGameLogic>();
       foreach (RegionPointGameLogic regionPoint in regionPoints) {
         GameObject placeholderPoint = GameObject.CreatePrimitive(PrimitiveType.Cube);
+        placeholderPoint.name = "RegionPointGizmo";
         placeholderPoint.transform.parent = regionPoint.transform;
         placeholderPoint.transform.position = regionPoint.Position;
         placeholderPoint.transform.localScale = new Vector3(5, 5, 5);
@@ -106,6 +120,7 @@ namespace BTDebug {
 
     private void EnablePlayerLanceSpawn() {
       GameObject placeholderPoint = GameObject.CreatePrimitive(PrimitiveType.Sphere);
+      placeholderPoint.name = "LanceSpawnGizmo";
       placeholderPoint.transform.parent = spawnerPlayerLance.transform;
       placeholderPoint.transform.localPosition = Vector3.zero;
 
@@ -139,6 +154,7 @@ namespace BTDebug {
 
     private GameObject EnableSpawn(GameObject target, SpawnType type) {
       GameObject placeholderPoint = GameObject.CreatePrimitive(PrimitiveType.Cylinder);
+      placeholderPoint.name = "MechSpawnGizmo";
       placeholderPoint.transform.parent = target.transform;
       placeholderPoint.transform.localPosition = Vector3.zero;
 
@@ -162,15 +178,18 @@ namespace BTDebug {
       Rect boundaryRec = chunkBoundaryLogic.GetEncounterBoundaryRectBounds();
 
       GameObject placeholderPoint = GameObject.CreatePrimitive(PrimitiveType.Cube);
+      placeholderPoint.name = "BoundaryGizmo";
       placeholderPoint.transform.parent = boundary.transform;
-      placeholderPoint.transform.localPosition = Vector3.zero;
+      placeholderPoint.transform.position = boundary.transform.position;
       placeholderPoint.transform.localScale = new Vector3(boundaryRec.width, boundaryRec.height, boundaryRec.width);
 
-      boundary = placeholderPoint;
+      placeholderPoint.GetComponent<Renderer>().sharedMaterial = boundaryMaterial;
+
+      boundaryRepresemtation = placeholderPoint;
     }
 
     private void DisableBoundary() {
-      MonoBehaviour.Destroy(boundary);
+      MonoBehaviour.Destroy(boundaryRepresemtation);
     }
 
     private GameObject GetActiveEncounterGameObject() {

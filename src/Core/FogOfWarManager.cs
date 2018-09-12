@@ -49,6 +49,8 @@ namespace BTDebug {
         DisablePilotableActorsFoW();
         if (IsFogOfWarOverlayDisableable) DisableOverlay();
       }
+      
+      GizmoManager.GetInstance().UpdateBoundaryColour();
     }
 
     private void EnablePilotableActorsFoW() {
