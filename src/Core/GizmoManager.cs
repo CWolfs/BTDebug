@@ -175,7 +175,8 @@ namespace BTDebug {
       GameObject boundary = chunkBoundaryRect.transform.Find("EncounterBoundaryRect").gameObject;
       EncounterBoundaryChunkGameLogic chunkBoundaryLogic = chunkBoundaryRect.GetComponent<EncounterBoundaryChunkGameLogic>();
       EncounterBoundaryRectGameLogic boundaryLogic = boundary.GetComponent<EncounterBoundaryRectGameLogic>();
-      Rect boundaryRec = chunkBoundaryLogic.GetEncounterBoundaryRectBounds();
+      // Rect boundaryRec = chunkBoundaryLogic.GetEncounterBoundaryRectBounds();
+      Rect boundaryRec = boundaryLogic.GetRect();
 
       GameObject placeholderPoint = GameObject.CreatePrimitive(PrimitiveType.Cube);
       placeholderPoint.name = "BoundaryGizmo";
