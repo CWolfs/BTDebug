@@ -13,7 +13,7 @@ using BTDebug.Utils;
 
 namespace BTDebug {
   public class GizmoManager {
-    private enum SpawnType { PLAYER_MECH, ENEMY_MECH, ENEMY_TURRET };
+    private enum SpawnType { PLAYER_MECH, ENEMY_MECH, ENEMY_TURRET, NEUTRAL };
     private static GizmoManager instance;
 
     public bool IsGizmoModeActive { get; private set; } = false;
@@ -28,6 +28,8 @@ namespace BTDebug {
     private List<GameObject> spawnerRepresentations = new List<GameObject>();
 
     private Material playerMechSpawnMaterial;
+    private Material enemyMechSpawnMaterial;
+    private Material neutralMechSpawnMaterial;
     private List<GameObject> playerMechSpawnRepresentations = new List<GameObject>();
 
     private GameObject activeEncounter;
@@ -51,6 +53,10 @@ namespace BTDebug {
 
       playerMechSpawnMaterial = new Material(Shader.Find("UI/DefaultBackground"));
       playerMechSpawnMaterial.color = Color.blue;
+      enemyMechSpawnMaterial = new Material(Shader.Find("UI/DefaultBackground"));
+      enemyMechSpawnMaterial.color = Color.red;
+      neutralMechSpawnMaterial = new Material(Shader.Find("UI/DefaultBackground"));
+      neutralMechSpawnMaterial.color = Color.green;
 
       boundaryMaterial = new Material(Shader.Find("BattleTech/VFX/Distortion"));
       boundaryMaterial.color = new Color(255f / 255f, 100f / 255f, 100f / 255f, 80f / 255f);
@@ -112,19 +118,47 @@ namespace BTDebug {
       }
 
       EnablePlayerLanceSpawn();
+      EnableEnemyLanceSpawns();
+      EnableNeutralLanceSpawns();
     }
 
     private void DisableSpawns() {
-      DisablePlayerLanceSpawn();
+      DisableLanceSpawns();
     }
 
     private void EnablePlayerLanceSpawn() {
+      EnableLance(spawnerPlayerLance, SpawnType.PLAYER_MECH);
+    }
+
+    private void EnableEnemyLanceSpawns() {
+      List<GameObject> lanceSpawners = activeEncounter.FindAllContainsRecursive(new string[] {
+        "Lance_Enemy_Wave",
+        "Lance_OpposingForce"
+      });
+
+      foreach (GameObject lanceSpawn in lanceSpawners) {
+        EnableLance(lanceSpawn, SpawnType.ENEMY_MECH);
+      }
+    }
+
+    private void EnableNeutralLanceSpawns() {
+      List<GameObject> lanceSpawners = activeEncounter.FindAllContainsRecursive(new string[] {
+        "Lance_Neutral",
+        "Lance_Escort"
+      });
+
+      foreach (GameObject lanceSpawn in lanceSpawners) {
+        EnableLance(lanceSpawn, SpawnType.NEUTRAL);
+      }  
+    }
+
+    private void EnableLance(GameObject spawner, SpawnType type) {
       GameObject placeholderPoint = GameObject.CreatePrimitive(PrimitiveType.Sphere);
       placeholderPoint.name = "LanceSpawnGizmo";
-      placeholderPoint.transform.parent = spawnerPlayerLance.transform;
+      placeholderPoint.transform.parent = spawner.transform;
       placeholderPoint.transform.localPosition = Vector3.zero;
 
-      Vector3 position = spawnerPlayerLance.transform.position;
+      Vector3 position = spawner.transform.position;
       Vector3 hexPosition = hexGrid.GetClosestPointOnGrid(position);
       placeholderPoint.transform.position = hexPosition;
 
@@ -133,16 +167,16 @@ namespace BTDebug {
 
       spawnerRepresentations.Add(placeholderPoint);
 
-      foreach (Transform t in spawnerPlayerLance.transform) {
+      foreach (Transform t in spawner.transform) {
         GameObject mechSpawn = t.gameObject;
         if (mechSpawn.name.Contains("SpawnPoint")) {
-          GameObject gizmo = EnableSpawn(mechSpawn, SpawnType.PLAYER_MECH);
+          GameObject gizmo = EnableSpawn(mechSpawn, type);
           playerMechSpawnRepresentations.Add(gizmo);
         }
-      }
+      } 
     }
 
-    private void DisablePlayerLanceSpawn() {
+    private void DisableLanceSpawns() {
       foreach (GameObject spawnerRepresentations in spawnerRepresentations) {
         MonoBehaviour.Destroy(spawnerRepresentations);
       }
@@ -165,6 +199,10 @@ namespace BTDebug {
 
       if (type == SpawnType.PLAYER_MECH) {
         placeholderPoint.GetComponent<Renderer>().sharedMaterial = playerMechSpawnMaterial;
+      } else if (type == SpawnType.ENEMY_MECH) {
+        placeholderPoint.GetComponent<Renderer>().sharedMaterial = enemyMechSpawnMaterial;
+      } else if (type == SpawnType.NEUTRAL) {
+        placeholderPoint.GetComponent<Renderer>().sharedMaterial = neutralMechSpawnMaterial;
       }
 
       return placeholderPoint;
@@ -175,7 +213,6 @@ namespace BTDebug {
       GameObject boundary = chunkBoundaryRect.transform.Find("EncounterBoundaryRect").gameObject;
       EncounterBoundaryChunkGameLogic chunkBoundaryLogic = chunkBoundaryRect.GetComponent<EncounterBoundaryChunkGameLogic>();
       EncounterBoundaryRectGameLogic boundaryLogic = boundary.GetComponent<EncounterBoundaryRectGameLogic>();
-      // Rect boundaryRec = chunkBoundaryLogic.GetEncounterBoundaryRectBounds();
       Rect boundaryRec = boundaryLogic.GetRect();
 
       GameObject placeholderPoint = GameObject.CreatePrimitive(PrimitiveType.Cube);
