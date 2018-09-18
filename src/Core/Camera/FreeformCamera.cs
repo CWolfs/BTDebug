@@ -16,8 +16,8 @@ namespace BTDebug.BTCamera {
     private const float MAXIMUM_ANGLE = 360f;
 
     private float mainSpeed = 50.0f;  // Regular speed
-    private float shiftAdd = 30.0f;   // Multiplied by how long shift is held.  Basically running
-    private float maxShift = 300.0f;  // Maximum speed when holding shift
+    private float shiftAdd = 50.0f;   // Multiplied by how long shift is held.  Basically running
+    private float maxShift = 400.0f;  // Maximum speed when holding shift
     private float totalRun = 1.0f;
 
     private Vector3 angles;

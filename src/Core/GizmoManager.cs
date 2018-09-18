@@ -40,6 +40,9 @@ namespace BTDebug {
     private GameObject boundaryRepresemtation;
     private Material boundaryMaterial;
 
+    private Material routeMaterial;
+    private List<GameObject> routePointRepresentations = new List<GameObject>();
+
     public static GizmoManager GetInstance() { 
       if (instance == null) instance = new GizmoManager();
       return instance;
@@ -60,6 +63,9 @@ namespace BTDebug {
 
       boundaryMaterial = new Material(Shader.Find("BattleTech/VFX/Distortion"));
       boundaryMaterial.color = new Color(255f / 255f, 100f / 255f, 100f / 255f, 80f / 255f);
+
+      routeMaterial = new Material(Shader.Find("UI/DefaultBackground"));
+      routeMaterial.color = Color.yellow;
     }
 
     public void UpdateBoundaryColour() {
@@ -78,11 +84,13 @@ namespace BTDebug {
         DisableRegions();
         DisableSpawns();
         DisableBoundary();
+        DisableRoutes();
         IsGizmoModeActive = false;
       } else {
         EnableRegions();
         EnableSpawns();
         EnableBoundary();
+        EnableRoutes();
         IsGizmoModeActive = true;
       }
     }
@@ -228,6 +236,26 @@ namespace BTDebug {
 
     private void DisableBoundary() {
       MonoBehaviour.Destroy(boundaryRepresemtation);
+    }
+
+    private void EnableRoutes() {
+      RoutePointGameLogic[] routePoints = MonoBehaviour.FindObjectsOfType<RoutePointGameLogic>();
+      foreach (RoutePointGameLogic routePoint in routePoints) {
+        GameObject placeholderPoint = GameObject.CreatePrimitive(PrimitiveType.Cube);
+        placeholderPoint.name = "RoutePointGizmo";
+        placeholderPoint.transform.parent = routePoint.transform;
+        placeholderPoint.transform.position = routePoint.Position;
+        placeholderPoint.transform.localScale = new Vector3(5, 5, 5);
+
+        placeholderPoint.GetComponent<Renderer>().sharedMaterial = routeMaterial;
+        routePointRepresentations.Add(placeholderPoint);
+      }
+    }
+
+    private void DisableRoutes() {
+      foreach (GameObject routePointRepresentation in routePointRepresentations) {
+        MonoBehaviour.Destroy(routePointRepresentation);
+      }
     }
 
     private GameObject GetActiveEncounterGameObject() {
