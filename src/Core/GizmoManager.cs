@@ -140,7 +140,7 @@ namespace BTDebug {
 
     private void EnableEnemyLanceSpawns() {
       List<GameObject> lanceSpawners = activeEncounter.FindAllContainsRecursive(new string[] {
-        "Lance_Enemy_Wave",
+        "Lance_Enemy",
         "Lance_OpposingForce"
       });
 
