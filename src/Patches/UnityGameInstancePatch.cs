@@ -42,6 +42,11 @@ namespace BTDebug {
         Main.Logger.LogDebug($"[BTDebug] Toggling Gizmos");
         GizmoManager.GetInstance().ToggleGizmos();
       }
+
+      if ((Input.GetKey(KeyCode.LeftAlt) || Input.GetKey(KeyCode.RightAlt)) && Input.GetKeyDown(KeyCode.R)) {
+        Main.Logger.LogDebug($"[BTDebug] Toggling Gizmos Regions");
+        GizmoManager.GetInstance().ToggleGizmoRegionMode();
+      }
     }
 
     static void RecursivePrintGameObject(GameObject go, string indentation) {

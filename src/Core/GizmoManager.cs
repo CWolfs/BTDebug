@@ -17,6 +17,7 @@ namespace BTDebug {
     private static GizmoManager instance;
 
     public bool IsGizmoModeActive { get; private set; } = false;
+    public bool IsGizmoRegionModeActive { get; private set; } = false;
     
     private GameObject encounterLayerParentGO;
     private HexGrid hexGrid;
@@ -93,6 +94,10 @@ namespace BTDebug {
         EnableRoutes();
         IsGizmoModeActive = true;
       }
+    }
+
+    public void ToggleGizmoRegionMode() {
+      IsGizmoRegionModeActive = !IsGizmoRegionModeActive;
     }
 
     private void EnableRegions() {
