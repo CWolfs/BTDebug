@@ -226,13 +226,13 @@ namespace BTDebug {
       GameObject boundary = chunkBoundaryRect.transform.Find("EncounterBoundaryRect").gameObject;
       EncounterBoundaryChunkGameLogic chunkBoundaryLogic = chunkBoundaryRect.GetComponent<EncounterBoundaryChunkGameLogic>();
       EncounterBoundaryRectGameLogic boundaryLogic = boundary.GetComponent<EncounterBoundaryRectGameLogic>();
-      Rect boundaryRec = boundaryLogic.GetRect();
+      Rect boundaryRec = chunkBoundaryLogic.GetEncounterBoundaryRectBounds();
 
       GameObject placeholderPoint = GameObject.CreatePrimitive(PrimitiveType.Cube);
       placeholderPoint.name = "BoundaryGizmo";
       placeholderPoint.transform.parent = boundary.transform;
       placeholderPoint.transform.position = boundary.transform.position;
-      placeholderPoint.transform.localScale = new Vector3(boundaryRec.width, boundaryRec.height, boundaryRec.width);
+      placeholderPoint.transform.localScale = new Vector3(boundaryRec.width, boundaryRec.height, boundaryRec.height);
 
       placeholderPoint.GetComponent<Renderer>().sharedMaterial = boundaryMaterial;
 

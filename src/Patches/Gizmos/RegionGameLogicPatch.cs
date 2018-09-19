@@ -11,7 +11,7 @@ namespace BTDebug {
   [HarmonyPatch(typeof(RegionGameLogic), "Update")]
   public class RegionGameLogicPatch {
     static void Postfix(RegionGameLogic __instance) {
-      if (GizmoManager.GetInstance().IsGizmoRegionModeActive) {
+      if (GizmoManager.GetInstance().IsGizmoModeActive && GizmoManager.GetInstance().IsGizmoRegionModeActive) {
         MeshRenderer component = __instance.GetComponent<MeshRenderer>();
         if (component != null) {
 					component.enabled = true;
