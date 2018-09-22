@@ -33,9 +33,19 @@ namespace BTDebug {
         FogOfWarManager.GetInstance().ToggleFogOfWar();
       }
 
-       if ((Input.GetKey(KeyCode.LeftAlt) || Input.GetKey(KeyCode.RightAlt)) && Input.GetKeyDown(KeyCode.C)) {
+      if ((Input.GetKey(KeyCode.LeftAlt) || Input.GetKey(KeyCode.RightAlt)) && Input.GetKeyDown(KeyCode.C)) {
         Main.Logger.LogDebug($"[BTDebug] Toggling Freeform Camera");
         CameraManager.GetInstance().ToggleFreeformCamera();
+      }
+
+      if ((Input.GetKey(KeyCode.LeftAlt) || Input.GetKey(KeyCode.RightAlt)) && Input.GetKeyDown(KeyCode.G)) {
+        Main.Logger.LogDebug($"[BTDebug] Toggling Gizmos");
+        GizmoManager.GetInstance().ToggleGizmos();
+      }
+
+      if ((Input.GetKey(KeyCode.LeftAlt) || Input.GetKey(KeyCode.RightAlt)) && Input.GetKeyDown(KeyCode.R)) {
+        Main.Logger.LogDebug($"[BTDebug] Toggling Gizmos Regions");
+        GizmoManager.GetInstance().ToggleGizmoRegionMode();
       }
     }
 
