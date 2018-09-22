@@ -13,7 +13,7 @@ A HBS BattleTech mod to provide debug related functionality
 * __Scene Dump__ - `alt + d` - Dumps the scene tree hierarchy into the log file. It dumps only active gameobjects and enabled components
 
 ![Example Sim Game Inspector](./docs/images/Sim.png)
-![Example Combat Inspector](./docs/images/Encounter.png)
+![Example Gizmos & Fly Cam](./docs/images/Gizmos.png)
 
 ## Special Thanks
 
