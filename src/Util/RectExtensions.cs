@@ -19,4 +19,13 @@ public static class RectExtensions {
 
     return false;
   }
+
+  public static Rect GenerateUsableBoundary(this Rect boundaryRec) {
+    float mapBorderSize = 50f;
+    float mapSize = 2048f;
+    Rect edgeOfMapRec = new Rect(-((mapSize) / 2f), -((mapSize) / 2f), mapSize - mapBorderSize, mapSize - mapBorderSize);
+    Rect boundaryIntersect;
+    boundaryRec.Intersects(edgeOfMapRec, out boundaryIntersect);
+    return boundaryIntersect;
+  }
 }
