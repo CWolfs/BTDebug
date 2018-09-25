@@ -41,6 +41,9 @@ namespace BTDebug {
     private GameObject boundaryRepresemtation;
     private Material boundaryMaterial;
 
+    private GameObject mapBoundaryRepresemtation;
+    private Material mapBoundaryMaterial;
+
     private Material routeMaterial;
     private List<GameObject> routePointRepresentations = new List<GameObject>();
 
@@ -65,6 +68,9 @@ namespace BTDebug {
       boundaryMaterial = new Material(Shader.Find("BattleTech/VFX/Distortion"));
       boundaryMaterial.color = new Color(255f / 255f, 100f / 255f, 100f / 255f, 80f / 255f);
 
+      mapBoundaryMaterial = new Material(Shader.Find("BattleTech/VFX/Distortion"));
+      mapBoundaryMaterial.color = new Color(255f / 255f, 153f / 255f, 51f / 255f, 80f / 255f);
+
       routeMaterial = new Material(Shader.Find("UI/DefaultBackground"));
       routeMaterial.color = Color.yellow;
     }
@@ -85,12 +91,14 @@ namespace BTDebug {
         DisableRegions();
         DisableSpawns();
         DisableBoundary();
+        DisableMapBoundary();
         DisableRoutes();
         IsGizmoModeActive = false;
       } else {
         EnableRegions();
         EnableSpawns();
         EnableBoundary();
+        EnableMapBoundary();
         EnableRoutes();
         IsGizmoModeActive = true;
       }
@@ -233,8 +241,9 @@ namespace BTDebug {
       GameObject placeholderPoint = GameObject.CreatePrimitive(PrimitiveType.Cube);
       placeholderPoint.name = "BoundaryGizmo";
       placeholderPoint.transform.parent = boundary.transform;
+
       Vector3 centre = (Vector3)ReflectionHelper.GetPrivateField(boundaryLogic, "rectCenter");
-      placeholderPoint.transform.position = centre - (centre - new Vector3(usableBoundary.center.x, centre.y, usableBoundary.center.y));
+      placeholderPoint.transform.position = new Vector3(centre.x + ((boundaryRec.width - usableBoundary.width) / 2f), centre.y, centre.z - ((boundaryRec.height - usableBoundary.height) / 2f));
       placeholderPoint.transform.localScale = new Vector3(usableBoundary.width, boundaryRec.height, usableBoundary.height);
 
       placeholderPoint.GetComponent<Renderer>().sharedMaterial = boundaryMaterial;
@@ -244,6 +253,25 @@ namespace BTDebug {
 
     private void DisableBoundary() {
       MonoBehaviour.Destroy(boundaryRepresemtation);
+    }
+
+    private void EnableMapBoundary() {
+      float mapBorderSize = 50f;
+      float mapSize = 2048f;
+      Rect mapBoundary = new Rect(0, 0, mapSize - (mapBorderSize * 2), mapSize - (mapBorderSize * 2));
+
+      GameObject placeholderPoint = GameObject.CreatePrimitive(PrimitiveType.Cube);
+      placeholderPoint.name = "MapBoundaryGizmo";
+      placeholderPoint.transform.position = new Vector3(mapBoundary.x, 100f, mapBoundary.y);
+      placeholderPoint.transform.localScale = new Vector3(mapBoundary.width, mapBoundary.height, mapBoundary.height);
+
+      placeholderPoint.GetComponent<Renderer>().sharedMaterial = mapBoundaryMaterial;
+
+      mapBoundaryRepresemtation = placeholderPoint;
+    }
+
+    private void DisableMapBoundary() {
+      MonoBehaviour.Destroy(mapBoundaryRepresemtation);
     }
 
     private void EnableRoutes() {

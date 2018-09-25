@@ -23,9 +23,10 @@ public static class RectExtensions {
   public static Rect GenerateUsableBoundary(this Rect boundaryRec) {
     float mapBorderSize = 50f;
     float mapSize = 2048f;
-    Rect edgeOfMapRec = new Rect(-((mapSize) / 2f), -((mapSize) / 2f), mapSize - mapBorderSize, mapSize - mapBorderSize);
+    Rect edgeOfMapRec = new Rect(0, 0, mapSize - (mapBorderSize * 2f), mapSize - (mapBorderSize * 2f));
+    Rect testBounadaryRec = new Rect(boundaryRec.x + 974f, boundaryRec.y + 974f, boundaryRec.width, boundaryRec.height);
     Rect boundaryIntersect;
-    boundaryRec.Intersects(edgeOfMapRec, out boundaryIntersect);
+    testBounadaryRec.Intersects(edgeOfMapRec, out boundaryIntersect);
     return boundaryIntersect;
   }
 }
