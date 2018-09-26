@@ -165,7 +165,8 @@ namespace BTDebug {
     private void EnableNeutralLanceSpawns() {
       List<GameObject> lanceSpawners = activeEncounter.FindAllContainsRecursive(new string[] {
         "Lance_Neutral",
-        "Lance_Escort"
+        "Lance_Escort",
+        "Lance_Ally",
       });
 
       foreach (GameObject lanceSpawn in lanceSpawners) {
