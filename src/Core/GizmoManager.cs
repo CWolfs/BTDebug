@@ -8,6 +8,7 @@ using RuntimeInspectorNamespace;
 using BattleTech;
 using BattleTech.Rendering;
 using BattleTech.Designed;
+using BattleTech.Framework;
 
 using BTDebug.Utils;
 
@@ -18,6 +19,8 @@ namespace BTDebug {
 
     public bool IsGizmoModeActive { get; private set; } = false;
     public bool IsGizmoRegionModeActive { get; private set; } = false;
+    
+    public Contract Contract { get; private set; }
     
     private GameObject encounterLayerParentGO;
     private HexGrid hexGrid;
@@ -75,6 +78,10 @@ namespace BTDebug {
       routeMaterial.color = Color.yellow;
     }
 
+    public void SetContract(Contract contract) {
+      Contract = contract;
+    }
+
     public void UpdateBoundaryColour() {
       if (FogOfWarManager.GetInstance().IsFogOfWarOn) {
         boundaryMaterial.color = new Color(255f / 255f, 100f / 255f, 100f / 255f, 80f / 255f);  
@@ -130,8 +137,8 @@ namespace BTDebug {
 
     private void EnableSpawns() {
       if (!spawnerPlayerLance) {
-        chunkPlayerLance = GetActiveEncounterGameObject().transform.Find("Chunk_PlayerLance").gameObject;
-        spawnerPlayerLance = chunkPlayerLance.transform.Find("Spawner_PlayerLance").gameObject;
+        chunkPlayerLance = GetActiveEncounterGameObject().transform.Find(GetPlayerLanceChunkName()).gameObject;
+        spawnerPlayerLance = chunkPlayerLance.transform.Find(GetPlayerLanceSpawnerName()).gameObject;
         if (spawnerPlayerLance == null) { 
           Main.Logger.LogError("[GizmoManager] No active encounters found");
           return;
@@ -154,7 +161,15 @@ namespace BTDebug {
     private void EnableEnemyLanceSpawns() {
       List<GameObject> lanceSpawners = activeEncounter.FindAllContainsRecursive(new string[] {
         "Lance_Enemy",
-        "Lance_OpposingForce"
+        "Lance_OpposingForce",
+
+        // mapStory_StoryEncounter1b_vHigh - Story_1B_Retreat,
+        "TraitorLance",
+        "Fight2Lance",
+        "03_DestroyLanceSpawner",
+        "TargetLance",
+        "05_MainHostileLanceSpawner",
+        "LanceSpawner"
       });
 
       foreach (GameObject lanceSpawn in lanceSpawners) {
@@ -166,7 +181,11 @@ namespace BTDebug {
       List<GameObject> lanceSpawners = activeEncounter.FindAllContainsRecursive(new string[] {
         "Lance_Neutral",
         "Lance_Escort",
-        "Lance_Ally",
+        "Lance_Ally",         // Mission Control
+
+        // mapStory_StoryEncounter1b_vHigh - Story_1B_Retreat
+        "AranoFriendlyLance",
+        "NeutralLance"
       });
 
       foreach (GameObject lanceSpawn in lanceSpawners) {
@@ -306,6 +325,26 @@ namespace BTDebug {
         }
       }
       return null;
+    }
+
+    public string GetPlayerLanceChunkName() {
+      string type = Enum.GetName(typeof(ContractType), Contract.ContractType);
+      
+      if (type == "Story_1B_Retreat") {
+        return "Gen_PlayerLance";
+      }
+
+      return "Chunk_PlayerLance";
+    }
+
+    public string GetPlayerLanceSpawnerName() {
+      string type = Enum.GetName(typeof(ContractType), Contract.ContractType);
+      
+      if (type == "Story_1B_Retreat") {
+        return "PlayerLanceSpawner";
+      }
+
+      return "Spawner_PlayerLance";
     }
   }
 }
