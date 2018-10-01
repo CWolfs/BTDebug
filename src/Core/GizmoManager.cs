@@ -169,7 +169,10 @@ namespace BTDebug {
         "03_DestroyLanceSpawner",
         "TargetLance",
         "05_MainHostileLanceSpawner",
-        "LanceSpawner"
+        "LanceSpawner",
+
+        // ArenaSkirmish
+        "Player2LanceSpawner",
       });
 
       foreach (GameObject lanceSpawn in lanceSpawners) {
@@ -330,7 +333,9 @@ namespace BTDebug {
     public string GetPlayerLanceChunkName() {
       string type = Enum.GetName(typeof(ContractType), Contract.ContractType);
       
-      if (type == "Story_1B_Retreat") {
+      if (type == "ArenaSkirmish") {
+        return "MultiPlayerSkirmishChunk";
+      } else if (type == "Story_1B_Retreat") {
         return "Gen_PlayerLance";
       }
 
@@ -340,7 +345,9 @@ namespace BTDebug {
     public string GetPlayerLanceSpawnerName() {
       string type = Enum.GetName(typeof(ContractType), Contract.ContractType);
       
-      if (type == "Story_1B_Retreat") {
+      if (type == "ArenaSkirmish") {
+        return "Player1LanceSpawner";
+      } else if (type == "Story_1B_Retreat") {
         return "PlayerLanceSpawner";
       }
 
