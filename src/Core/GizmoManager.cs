@@ -159,7 +159,7 @@ namespace BTDebug {
     }
 
     private void EnableEnemyLanceSpawns() {
-      List<GameObject> lanceSpawners = activeEncounter.FindAllContainsRecursive(new string[] {
+      List<GameObject> lanceSpawners = activeEncounter.FindAllContainsRecursive(
         "Lance_Enemy",
         "Lance_OpposingForce",
 
@@ -181,7 +181,7 @@ namespace BTDebug {
     }
 
     private void EnableNeutralLanceSpawns() {
-      List<GameObject> lanceSpawners = activeEncounter.FindAllContainsRecursive(new string[] {
+      List<GameObject> lanceSpawners = activeEncounter.FindAllContainsRecursive(
         "Lance_Neutral",
         "Lance_Escort",
         "Lance_Ally",         // Mission Control
@@ -189,7 +189,7 @@ namespace BTDebug {
         // mapStory_StoryEncounter1b_vHigh - Story_1B_Retreat
         "AranoFriendlyLance",
         "NeutralLance"
-      });
+      );
 
       foreach (GameObject lanceSpawn in lanceSpawners) {
         EnableLance(lanceSpawn, SpawnType.NEUTRAL);
