@@ -172,8 +172,8 @@ namespace BTDebug {
         "LanceSpawner",
 
         // ArenaSkirmish
-        "Player2LanceSpawner",
-      });
+        "Player2LanceSpawner"
+      );
 
       foreach (GameObject lanceSpawn in lanceSpawners) {
         EnableLance(lanceSpawn, SpawnType.ENEMY_MECH);
