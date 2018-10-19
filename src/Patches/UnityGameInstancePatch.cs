@@ -38,6 +38,11 @@ namespace BTDebug {
         CameraManager.GetInstance().ToggleFreeformCamera();
       }
 
+      if ((Input.GetKey(KeyCode.LeftAlt) || Input.GetKey(KeyCode.RightAlt)) && Input.GetKeyDown(KeyCode.U)) {
+        Main.Logger.LogDebug($"[BTDebug] Toggling User Interface");
+        CameraManager.GetInstance().ToggleUi();
+      }
+
       if ((Input.GetKey(KeyCode.LeftAlt) || Input.GetKey(KeyCode.RightAlt)) && Input.GetKeyDown(KeyCode.G)) {
         Main.Logger.LogDebug($"[BTDebug] Toggling Gizmos");
         GizmoManager.GetInstance().ToggleGizmos();
