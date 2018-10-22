@@ -36,15 +36,18 @@ namespace BTDebug {
     private Material neutralMechSpawnMaterial;
     private List<GameObject> playerMechSpawnRepresentations = new List<GameObject>();
 
+    private Material plotMaterial;
+    private List<GameObject> plotCentreRepresentations = new List<GameObject>();
+
     private GameObject activeEncounter;
     private GameObject chunkPlayerLance;
     private GameObject spawnerPlayerLance;
     private List<GameObject> playerLanceSpawnPoints = new List<GameObject>();
 
-    private GameObject boundaryRepresemtation;
+    private GameObject boundaryRepresentation;
     private Material boundaryMaterial;
 
-    private GameObject mapBoundaryRepresemtation;
+    private GameObject mapBoundaryRepresentation;
     private Material mapBoundaryMaterial;
 
     private Material routeMaterial;
@@ -67,6 +70,9 @@ namespace BTDebug {
       enemyMechSpawnMaterial.color = Color.red;
       neutralMechSpawnMaterial = new Material(Shader.Find("UI/DefaultBackground"));
       neutralMechSpawnMaterial.color = Color.green;
+
+      plotMaterial = new Material(Shader.Find("UI/DefaultBackground"));
+      plotMaterial.color = Color.white;
 
       boundaryMaterial = new Material(Shader.Find("BattleTech/VFX/Distortion"));
       boundaryMaterial.color = new Color(255f / 255f, 100f / 255f, 100f / 255f, 80f / 255f);
@@ -97,6 +103,7 @@ namespace BTDebug {
       if (IsGizmoModeActive) {
         DisableRegions();
         DisableSpawns();
+        DisablePlotCentres();
         DisableBoundary();
         DisableMapBoundary();
         DisableRoutes();
@@ -104,6 +111,7 @@ namespace BTDebug {
       } else {
         EnableRegions();
         EnableSpawns();
+        EnablePlotCentres();
         EnableBoundary();
         EnableMapBoundary();
         EnableRoutes();
@@ -271,11 +279,11 @@ namespace BTDebug {
 
       placeholderPoint.GetComponent<Renderer>().sharedMaterial = boundaryMaterial;
 
-      boundaryRepresemtation = placeholderPoint;
+      boundaryRepresentation = placeholderPoint;
     }
 
     private void DisableBoundary() {
-      MonoBehaviour.Destroy(boundaryRepresemtation);
+      MonoBehaviour.Destroy(boundaryRepresentation);
     }
 
     private void EnableMapBoundary() {
@@ -290,11 +298,11 @@ namespace BTDebug {
 
       placeholderPoint.GetComponent<Renderer>().sharedMaterial = mapBoundaryMaterial;
 
-      mapBoundaryRepresemtation = placeholderPoint;
+      mapBoundaryRepresentation = placeholderPoint;
     }
 
     private void DisableMapBoundary() {
-      MonoBehaviour.Destroy(mapBoundaryRepresemtation);
+      MonoBehaviour.Destroy(mapBoundaryRepresentation);
     }
 
     private void EnableRoutes() {
@@ -315,6 +323,42 @@ namespace BTDebug {
       foreach (GameObject routePointRepresentation in routePointRepresentations) {
         MonoBehaviour.Destroy(routePointRepresentation);
       }
+    }
+
+    private void EnablePlotCentres() {
+      GameObject plotsParentGo = GameObject.Find("PlotParent");
+      foreach (Transform t in plotsParentGo.transform) {
+        Vector3 plotPosition = t.position;
+        if (IsPlotValidForEncounter(t)) {
+          GameObject placeholderPoint = GameObject.CreatePrimitive(PrimitiveType.Cube);
+          placeholderPoint.name = "PlotCentreGizmo";
+          placeholderPoint.transform.parent = t;
+          placeholderPoint.transform.position = t.position;
+          placeholderPoint.transform.localScale = new Vector3(5, 5, 5);
+
+          placeholderPoint.GetComponent<Renderer>().sharedMaterial = plotMaterial;
+          plotCentreRepresentations.Add(placeholderPoint);
+        }
+      }
+    }
+
+    private void DisablePlotCentres() {
+      foreach (GameObject plotCentreRepresentation in plotCentreRepresentations) {
+        MonoBehaviour.Destroy(plotCentreRepresentation);
+      } 
+    }
+
+    private bool IsPlotValidForEncounter(Transform plotTransform) {
+      Transform selectedPlotTransform = plotTransform.FindIgnoreCaseStartsWith("PlotVariant");
+
+      if (selectedPlotTransform == null) {
+        return false;
+      }
+
+      GameObject selectedPlotGo = selectedPlotTransform.gameObject;
+      if (selectedPlotGo.activeSelf) return true;
+
+      return false;
     }
 
     private GameObject GetActiveEncounterGameObject() {
