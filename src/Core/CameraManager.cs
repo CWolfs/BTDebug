@@ -17,6 +17,7 @@ namespace BTDebug {
     private static string CombatGameCameraGOName = "GameCamera(Clone)";
 
     public bool IsFreeformCameraEnabled { get; private set; } = false;
+    public bool IsUiEnabled { get; private set; } = true;
 
     private GameObject GameCameraObject { get; set; }
     private CameraControl CameraControl { get; set; }
@@ -25,6 +26,8 @@ namespace BTDebug {
 
     private float originalCameraFoV = 0;
     private float originalCameraFarClipPlane = 0;
+
+    private GameObject UiManagerGo { get; set; }
 
     public static CameraManager GetInstance() { 
       if (instance == null) instance = new CameraManager();
@@ -39,6 +42,10 @@ namespace BTDebug {
       if (SetupCamera()) {
         EnableFreeformCamera(!IsFreeformCameraEnabled);
       }
+    }
+
+    public void ToggleUi() {
+      EnableUi(!IsUiEnabled);
     }
 
     public void EnableFreeformCamera(bool flag) {
@@ -65,6 +72,32 @@ namespace BTDebug {
         Camera.farClipPlane = originalCameraFarClipPlane;
         if (FreeFormCamera) FreeFormCamera.enabled = false;
         IsFreeformCameraEnabled = false;
+      }
+    }
+
+    public void EnableUi(bool flag) {
+      if (UiManagerGo == null) UiManagerGo = GameObject.Find("UIManager");
+
+      if (flag) {
+        GameObject uiRoot = UiManagerGo.transform.Find("UICam").gameObject;
+        uiRoot.SetActive(true);
+
+        List<GameObject> inworldUiElements = UiManagerGo.FindAllContainsRecursive("uixPrfIndc_");
+        foreach (GameObject inworldUiElement in inworldUiElements) {
+          inworldUiElement.SetActive(true);
+        }
+
+        IsUiEnabled = true;
+      } else {
+        GameObject uiRoot = UiManagerGo.transform.Find("UICam").gameObject;
+        uiRoot.SetActive(false);
+
+        List<GameObject> inworldUiElements = UiManagerGo.FindAllContainsRecursive("uixPrfIndc_");
+        foreach (GameObject inworldUiElement in inworldUiElements) {
+          inworldUiElement.SetActive(false);
+        }
+
+        IsUiEnabled = false;
       }
     }
 

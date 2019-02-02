@@ -8,6 +8,7 @@ using RuntimeInspectorNamespace;
 using BattleTech;
 using BattleTech.Rendering;
 using BattleTech.Designed;
+using BattleTech.Framework;
 
 using BTDebug.Utils;
 
@@ -18,6 +19,8 @@ namespace BTDebug {
 
     public bool IsGizmoModeActive { get; private set; } = false;
     public bool IsGizmoRegionModeActive { get; private set; } = false;
+    
+    public Contract Contract { get; private set; }
     
     private GameObject encounterLayerParentGO;
     private HexGrid hexGrid;
@@ -33,13 +36,19 @@ namespace BTDebug {
     private Material neutralMechSpawnMaterial;
     private List<GameObject> playerMechSpawnRepresentations = new List<GameObject>();
 
+    private Material plotMaterial;
+    private List<GameObject> plotCentreRepresentations = new List<GameObject>();
+
     private GameObject activeEncounter;
     private GameObject chunkPlayerLance;
     private GameObject spawnerPlayerLance;
     private List<GameObject> playerLanceSpawnPoints = new List<GameObject>();
 
-    private GameObject boundaryRepresemtation;
+    private GameObject boundaryRepresentation;
     private Material boundaryMaterial;
+
+    private GameObject mapBoundaryRepresentation;
+    private Material mapBoundaryMaterial;
 
     private Material routeMaterial;
     private List<GameObject> routePointRepresentations = new List<GameObject>();
@@ -62,11 +71,21 @@ namespace BTDebug {
       neutralMechSpawnMaterial = new Material(Shader.Find("UI/DefaultBackground"));
       neutralMechSpawnMaterial.color = Color.green;
 
+      plotMaterial = new Material(Shader.Find("UI/DefaultBackground"));
+      plotMaterial.color = Color.white;
+
       boundaryMaterial = new Material(Shader.Find("BattleTech/VFX/Distortion"));
       boundaryMaterial.color = new Color(255f / 255f, 100f / 255f, 100f / 255f, 80f / 255f);
 
+      mapBoundaryMaterial = new Material(Shader.Find("BattleTech/VFX/Distortion"));
+      mapBoundaryMaterial.color = new Color(255f / 255f, 153f / 255f, 51f / 255f, 80f / 255f);
+
       routeMaterial = new Material(Shader.Find("UI/DefaultBackground"));
       routeMaterial.color = Color.yellow;
+    }
+
+    public void SetContract(Contract contract) {
+      Contract = contract;
     }
 
     public void UpdateBoundaryColour() {
@@ -84,13 +103,17 @@ namespace BTDebug {
       if (IsGizmoModeActive) {
         DisableRegions();
         DisableSpawns();
+        DisablePlotCentres();
         DisableBoundary();
+        DisableMapBoundary();
         DisableRoutes();
         IsGizmoModeActive = false;
       } else {
         EnableRegions();
         EnableSpawns();
+        EnablePlotCentres();
         EnableBoundary();
+        EnableMapBoundary();
         EnableRoutes();
         IsGizmoModeActive = true;
       }
@@ -122,8 +145,8 @@ namespace BTDebug {
 
     private void EnableSpawns() {
       if (!spawnerPlayerLance) {
-        chunkPlayerLance = GetActiveEncounterGameObject().transform.Find("Chunk_PlayerLance").gameObject;
-        spawnerPlayerLance = chunkPlayerLance.transform.Find("Spawner_PlayerLance").gameObject;
+        chunkPlayerLance = GetActiveEncounterGameObject().transform.Find(GetPlayerLanceChunkName()).gameObject;
+        spawnerPlayerLance = chunkPlayerLance.transform.Find(GetPlayerLanceSpawnerName()).gameObject;
         if (spawnerPlayerLance == null) { 
           Main.Logger.LogError("[GizmoManager] No active encounters found");
           return;
@@ -144,10 +167,21 @@ namespace BTDebug {
     }
 
     private void EnableEnemyLanceSpawns() {
-      List<GameObject> lanceSpawners = activeEncounter.FindAllContainsRecursive(new string[] {
+      List<GameObject> lanceSpawners = activeEncounter.FindAllContainsRecursive(
         "Lance_Enemy",
-        "Lance_OpposingForce"
-      });
+        "Lance_OpposingForce",
+
+        // mapStory_StoryEncounter1b_vHigh - Story_1B_Retreat,
+        "TraitorLance",
+        "Fight2Lance",
+        "03_DestroyLanceSpawner",
+        "TargetLance",
+        "05_MainHostileLanceSpawner",
+        "LanceSpawner",
+
+        // ArenaSkirmish
+        "Player2LanceSpawner"
+      );
 
       foreach (GameObject lanceSpawn in lanceSpawners) {
         EnableLance(lanceSpawn, SpawnType.ENEMY_MECH);
@@ -155,10 +189,15 @@ namespace BTDebug {
     }
 
     private void EnableNeutralLanceSpawns() {
-      List<GameObject> lanceSpawners = activeEncounter.FindAllContainsRecursive(new string[] {
+      List<GameObject> lanceSpawners = activeEncounter.FindAllContainsRecursive(
         "Lance_Neutral",
-        "Lance_Escort"
-      });
+        "Lance_Escort",
+        "Lance_Ally",         // Mission Control
+
+        // mapStory_StoryEncounter1b_vHigh - Story_1B_Retreat
+        "AranoFriendlyLance",
+        "NeutralLance"
+      );
 
       foreach (GameObject lanceSpawn in lanceSpawners) {
         EnableLance(lanceSpawn, SpawnType.NEUTRAL);
@@ -226,21 +265,44 @@ namespace BTDebug {
       GameObject boundary = chunkBoundaryRect.transform.Find("EncounterBoundaryRect").gameObject;
       EncounterBoundaryChunkGameLogic chunkBoundaryLogic = chunkBoundaryRect.GetComponent<EncounterBoundaryChunkGameLogic>();
       EncounterBoundaryRectGameLogic boundaryLogic = boundary.GetComponent<EncounterBoundaryRectGameLogic>();
-      Rect boundaryRec = chunkBoundaryLogic.GetEncounterBoundaryRectBounds();
+
+      Rect boundaryRec = boundaryLogic.GetRect();
+      Rect usableBoundary = boundaryRec.GenerateUsableBoundary();
 
       GameObject placeholderPoint = GameObject.CreatePrimitive(PrimitiveType.Cube);
       placeholderPoint.name = "BoundaryGizmo";
       placeholderPoint.transform.parent = boundary.transform;
-      placeholderPoint.transform.position = boundary.transform.position;
-      placeholderPoint.transform.localScale = new Vector3(boundaryRec.width, boundaryRec.height, boundaryRec.height);
+
+      Vector3 centre = (Vector3)ReflectionHelper.GetPrivateField(boundaryLogic, "rectCenter");
+      placeholderPoint.transform.position = new Vector3(centre.x + ((boundaryRec.width - usableBoundary.width) / 2f), centre.y, centre.z - ((boundaryRec.height - usableBoundary.height) / 2f));
+      placeholderPoint.transform.localScale = new Vector3(usableBoundary.width, boundaryRec.height, usableBoundary.height);
 
       placeholderPoint.GetComponent<Renderer>().sharedMaterial = boundaryMaterial;
 
-      boundaryRepresemtation = placeholderPoint;
+      boundaryRepresentation = placeholderPoint;
     }
 
     private void DisableBoundary() {
-      MonoBehaviour.Destroy(boundaryRepresemtation);
+      MonoBehaviour.Destroy(boundaryRepresentation);
+    }
+
+    private void EnableMapBoundary() {
+      float mapBorderSize = 50f;
+      float mapSize = 2048f;
+      Rect mapBoundary = new Rect(0, 0, mapSize - (mapBorderSize * 2), mapSize - (mapBorderSize * 2));
+
+      GameObject placeholderPoint = GameObject.CreatePrimitive(PrimitiveType.Cube);
+      placeholderPoint.name = "MapBoundaryGizmo";
+      placeholderPoint.transform.position = new Vector3(mapBoundary.x, 100f, mapBoundary.y);
+      placeholderPoint.transform.localScale = new Vector3(mapBoundary.width, mapBoundary.height, mapBoundary.height);
+
+      placeholderPoint.GetComponent<Renderer>().sharedMaterial = mapBoundaryMaterial;
+
+      mapBoundaryRepresentation = placeholderPoint;
+    }
+
+    private void DisableMapBoundary() {
+      MonoBehaviour.Destroy(mapBoundaryRepresentation);
     }
 
     private void EnableRoutes() {
@@ -263,6 +325,42 @@ namespace BTDebug {
       }
     }
 
+    private void EnablePlotCentres() {
+      GameObject plotsParentGo = GameObject.Find("PlotParent");
+      foreach (Transform t in plotsParentGo.transform) {
+        Vector3 plotPosition = t.position;
+        if (IsPlotValidForEncounter(t)) {
+          GameObject placeholderPoint = GameObject.CreatePrimitive(PrimitiveType.Cube);
+          placeholderPoint.name = "PlotCentreGizmo";
+          placeholderPoint.transform.parent = t;
+          placeholderPoint.transform.position = t.position;
+          placeholderPoint.transform.localScale = new Vector3(5, 5, 5);
+
+          placeholderPoint.GetComponent<Renderer>().sharedMaterial = plotMaterial;
+          plotCentreRepresentations.Add(placeholderPoint);
+        }
+      }
+    }
+
+    private void DisablePlotCentres() {
+      foreach (GameObject plotCentreRepresentation in plotCentreRepresentations) {
+        MonoBehaviour.Destroy(plotCentreRepresentation);
+      } 
+    }
+
+    private bool IsPlotValidForEncounter(Transform plotTransform) {
+      Transform selectedPlotTransform = plotTransform.FindIgnoreCaseStartsWith("PlotVariant");
+
+      if (selectedPlotTransform == null) {
+        return false;
+      }
+
+      GameObject selectedPlotGo = selectedPlotTransform.gameObject;
+      if (selectedPlotGo.activeSelf) return true;
+
+      return false;
+    }
+
     private GameObject GetActiveEncounterGameObject() {
       if (activeEncounter) return activeEncounter;
 
@@ -274,6 +372,30 @@ namespace BTDebug {
         }
       }
       return null;
+    }
+
+    public string GetPlayerLanceChunkName() {
+      string type = Enum.GetName(typeof(ContractType), Contract.ContractType);
+      
+      if (type == "ArenaSkirmish") {
+        return "MultiPlayerSkirmishChunk";
+      } else if (type == "Story_1B_Retreat") {
+        return "Gen_PlayerLance";
+      }
+
+      return "Chunk_PlayerLance";
+    }
+
+    public string GetPlayerLanceSpawnerName() {
+      string type = Enum.GetName(typeof(ContractType), Contract.ContractType);
+      
+      if (type == "ArenaSkirmish") {
+        return "Player1LanceSpawner";
+      } else if (type == "Story_1B_Retreat") {
+        return "PlayerLanceSpawner";
+      }
+
+      return "Spawner_PlayerLance";
     }
   }
 }

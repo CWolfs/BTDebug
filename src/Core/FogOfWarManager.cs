@@ -57,7 +57,11 @@ namespace BTDebug {
       List<ICombatant> combatants = UnityGameInstance.BattleTechGame.Combat.GetAllCombatants();
       PilotableActorRepresentation[] pilotableActors = MonoBehaviour.FindObjectsOfType<PilotableActorRepresentation>();
       foreach (PilotableActorRepresentation pilotableActor in pilotableActors) {
-        pilotableActor.ClearForcedPlayerVisibilityLevel(combatants);
+        try {
+          pilotableActor.ClearForcedPlayerVisibilityLevel(combatants);
+        } catch (ArgumentNullException e) {
+          Main.Logger.LogWarning($"[FogOfWarManager] Unable to clear forced player visibility for {pilotableActor.name} - {e.Message}");
+        }
       }
     }
 
