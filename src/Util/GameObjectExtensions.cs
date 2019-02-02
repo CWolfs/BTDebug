@@ -4,7 +4,7 @@ using System.Collections.Generic;
 
 using BTDebug;
 
-public static class GameObjextExtensions {
+public static class GameObjectExtensions {
   public static List<GameObject> FindAllContains(this GameObject go, string name) {
     List<GameObject> gameObjects = new List<GameObject>();
 
