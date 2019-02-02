@@ -12,7 +12,7 @@ A HBS BattleTech mod to provide debug related functionality
 * __Toggle Freeform Camera__ - `alt + c` - Toggles between the normal BT camera and a debug freeform fly camera
 * __Toggle Gizmo Mode__ - `alt + g` - Toggles in-combat gizmos to display such as spawn points, regions and the encounter boundary
     * __Toggle Region Gizmo__ - `alt + r` - Toggles full region view mode on or off. When on, it shows the region entirely, when off it shows just the edges as dots.
-* ___Toggle UI__ - `alt + u` - Toggles UI on or off (tested for combat mostly)
+* __Toggle UI__ - `alt + u` - Toggles UI on or off (tested for combat mostly)
 * __Scene Dump__ - `alt + d` - Dumps the scene tree hierarchy into the log file. It dumps only active gameobjects and enabled components
 
 ![Example Sim Game Inspector](./docs/images/Sim.png)
