@@ -74,11 +74,13 @@ namespace BTDebug {
       plotMaterial = new Material(Shader.Find("UI/DefaultBackground"));
       plotMaterial.color = Color.white;
 
-      boundaryMaterial = new Material(Shader.Find("BattleTech/VFX/Distortion"));
-      boundaryMaterial.color = new Color(255f / 255f, 100f / 255f, 100f / 255f, 80f / 255f);
+      boundaryMaterial = new Material(Shader.Find("Unlit/BT-LaserUI"));
+      boundaryMaterial.name = "BTDebug Boundary";
+      boundaryMaterial.color = new Color(255f / 255f, 100f / 255f, 100f / 255f, 140f / 255f);
 
-      mapBoundaryMaterial = new Material(Shader.Find("BattleTech/VFX/Distortion"));
-      mapBoundaryMaterial.color = new Color(255f / 255f, 153f / 255f, 51f / 255f, 80f / 255f);
+      mapBoundaryMaterial = new Material(Shader.Find("Unlit/BT-LaserUI"));
+      mapBoundaryMaterial.name = "BTDebug Boundary";
+      mapBoundaryMaterial.color = new Color(47f / 255f, 190f / 255f, 255f / 255f, 140f / 255f);
 
       routeMaterial = new Material(Shader.Find("UI/DefaultBackground"));
       routeMaterial.color = Color.yellow;
@@ -90,9 +92,11 @@ namespace BTDebug {
 
     public void UpdateBoundaryColour() {
       if (FogOfWarManager.GetInstance().IsFogOfWarOn) {
-        boundaryMaterial.color = new Color(255f / 255f, 100f / 255f, 100f / 255f, 80f / 255f);  
-      } else {
         boundaryMaterial.color = new Color(255f / 255f, 100f / 255f, 100f / 255f, 140f / 255f);
+        mapBoundaryMaterial.color = new Color(47f / 255f, 190f / 255f, 255f / 255f, 140f / 255f);
+      } else {
+        boundaryMaterial.color = new Color(255f / 255f, 100f / 255f, 100f / 255f, 80f / 255f);
+        mapBoundaryMaterial.color = new Color(47f / 255f, 190f / 255f, 255f / 255f, 80f / 255f);
       }
     }
 
