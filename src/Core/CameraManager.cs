@@ -21,6 +21,7 @@ namespace BTDebug {
 
     private GameObject GameCameraObject { get; set; }
     private CameraControl CameraControl { get; set; }
+    private DebugFlyCameraControl DebugFlyCameraControl { get; set; }
     private Camera Camera { get; set; }
     private FreeFormCamera FreeFormCamera { get; set; }
 
@@ -56,7 +57,6 @@ namespace BTDebug {
         Camera.fieldOfView = 60;
         Camera.farClipPlane = 9999;
         CameraControl.DEBUG_TakeCompleteControl = true;
-        CameraControl.enabled = false;
         
         if (!FreeFormCamera) {
           FreeFormCamera = GameCameraObject.AddComponent<FreeFormCamera>();
@@ -66,11 +66,12 @@ namespace BTDebug {
         IsFreeformCameraEnabled = true;
       } else {
         Main.Logger.LogDebug($"[BTDebug] Turning Freeform Camera is OFF");
-        CameraControl.enabled = true;
+
         CameraControl.DEBUG_TakeCompleteControl = false;
         Camera.fieldOfView = originalCameraFoV;
         Camera.farClipPlane = originalCameraFarClipPlane;
         if (FreeFormCamera) FreeFormCamera.enabled = false;
+
         IsFreeformCameraEnabled = false;
       }
     }
@@ -111,6 +112,9 @@ namespace BTDebug {
 
         Camera = GameCameraObject.GetComponentInChildren<Camera>();
         if (!Camera) return false;
+
+        DebugFlyCameraControl = GameCameraObject.GetComponent<DebugFlyCameraControl>();
+        if (!DebugFlyCameraControl) return false;
       }
       return true;
     }

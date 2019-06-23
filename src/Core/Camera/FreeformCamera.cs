@@ -23,7 +23,7 @@ namespace BTDebug.BTCamera {
     private Vector3 angles;
     public float speed = 1.0f;
     public float fastSpeed = 2.0f;
-    public float mouseSpeed = 4.0f;
+    public float mouseSpeed = 90.0f;
 
     private Vector3 camLastPos = Vector3.one;
 
@@ -48,10 +48,11 @@ namespace BTDebug.BTCamera {
     private void MouseLook() {
       if (Input.GetMouseButton(1)) {
         // Read the mouse input axis
-        angles.x -= Input.GetAxis("Mouse Y") * mouseSpeed;
-        angles.y += Input.GetAxis("Mouse X") * mouseSpeed;
+        angles.x -= Input.GetAxis("Mouse Y") * mouseSpeed * Time.deltaTime;
+        angles.y += Input.GetAxis("Mouse X") * mouseSpeed * Time.deltaTime;        
         transform.eulerAngles = angles;
 
+ 
         // Keyboard commands
         Vector3 p = GetBaseInput();
         if (Input.GetKey(KeyCode.LeftShift)) {
