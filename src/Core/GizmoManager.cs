@@ -398,7 +398,7 @@ namespace BTDebug {
       
       if (type == "ArenaSkirmish") {
         return "Player1LanceSpawner";
-      } else if ((type == "Story_1B_Retreat") || (type == "FireMission")) {
+      } else if ((type == "Story_1B_Retreat") || (type == "FireMission") || (type == "AttackDefend")) {
         return "PlayerLanceSpawner";
       }
 
