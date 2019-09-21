@@ -382,7 +382,7 @@ namespace BTDebug {
     }
 
     public string GetPlayerLanceChunkName() {
-      string type = Enum.GetName(typeof(ContractType), Contract.ContractType);
+      string type = Contract.ContractTypeValue.Name;
       
       if (type == "ArenaSkirmish") {
         return "MultiPlayerSkirmishChunk";
@@ -394,7 +394,7 @@ namespace BTDebug {
     }
 
     public string GetPlayerLanceSpawnerName() {
-      string type = Enum.GetName(typeof(ContractType), Contract.ContractType);
+      string type = Contract.ContractTypeValue.Name;
       
       if (type == "ArenaSkirmish") {
         return "Player1LanceSpawner";
