@@ -200,7 +200,10 @@ namespace BTDebug {
 
         // mapStory_StoryEncounter1b_vHigh - Story_1B_Retreat
         "AranoFriendlyLance",
-        "NeutralLance"
+        "NeutralLance",
+
+        // FireMission
+        "Lance_Employer"
       );
 
       foreach (GameObject lanceSpawn in lanceSpawners) {
@@ -379,7 +382,7 @@ namespace BTDebug {
     }
 
     public string GetPlayerLanceChunkName() {
-      string type = Enum.GetName(typeof(ContractType), Contract.ContractType);
+      string type = Contract.ContractTypeValue.Name;
       
       if (type == "ArenaSkirmish") {
         return "MultiPlayerSkirmishChunk";
@@ -391,11 +394,11 @@ namespace BTDebug {
     }
 
     public string GetPlayerLanceSpawnerName() {
-      string type = Enum.GetName(typeof(ContractType), Contract.ContractType);
+      string type = Contract.ContractTypeValue.Name;
       
       if (type == "ArenaSkirmish") {
         return "Player1LanceSpawner";
-      } else if (type == "Story_1B_Retreat") {
+      } else if ((type == "Story_1B_Retreat") || (type == "FireMission") || (type == "AttackDefend")) {
         return "PlayerLanceSpawner";
       }
 
