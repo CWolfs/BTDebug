@@ -1,15 +1,21 @@
 {
-    "version": "2.0.0",
-    "tasks": [
-        {
-            "label": "build",
-            "command": "dotnet",
-            "type": "process",
-            "args": [
-                "build",
-                "D:/Modding/Battletech/BTDebug/src/BTDebug.csproj"
-            ],
-            "problemMatcher": "$msCompile"
-        }
-    ]
+  "version": "2.0.0",
+  "tasks": [
+    {
+      "label": "build",
+      "command": "dotnet",
+      "type": "process",
+      "args": ["build", "D:/Modding/Battletech/BTDebug/src/BTDebug.csproj"],
+      "problemMatcher": "$msCompile"
+    },
+    {
+      "label": "copy (hbs)",
+      "type": "shell",
+      "command": "cp",
+      "args": [
+        "D:/Modding/Battletech/BTDebug/src/bin/Debug/net471/BTDebug.dll",
+        "'C:/Users/Rich/Documents/my games/BattleTech/mods/HBS/BTDebug'"
+      ]
+    }
+  ]
 }
