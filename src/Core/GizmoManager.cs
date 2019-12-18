@@ -19,9 +19,9 @@ namespace BTDebug {
 
     public bool IsGizmoModeActive { get; private set; } = false;
     public bool IsGizmoRegionModeActive { get; private set; } = false;
-    
+
     public Contract Contract { get; private set; }
-    
+
     private GameObject encounterLayerParentGO;
     private HexGrid hexGrid;
 
@@ -53,7 +53,7 @@ namespace BTDebug {
     private Material routeMaterial;
     private List<GameObject> routePointRepresentations = new List<GameObject>();
 
-    public static GizmoManager GetInstance() { 
+    public static GizmoManager GetInstance() {
       if (instance == null) instance = new GizmoManager();
       return instance;
     }
@@ -102,7 +102,7 @@ namespace BTDebug {
 
     public void ToggleGizmos() {
       if (!encounterLayerParentGO) encounterLayerParentGO = GameObject.Find("EncounterLayerParent");
-      if (hexGrid == null) hexGrid = ReflectionHelper.GetPrivateStaticField(typeof(WorldPointGameLogic), "hexGrid") as HexGrid;
+      if (hexGrid == null) hexGrid = ReflectionHelper.GetPrivateStaticField(typeof(WorldPointGameLogic), "_hexGrid") as HexGrid;
 
       if (IsGizmoModeActive) {
         DisableRegions();
@@ -151,7 +151,7 @@ namespace BTDebug {
       if (!spawnerPlayerLance) {
         chunkPlayerLance = GetActiveEncounterGameObject().transform.Find(GetPlayerLanceChunkName()).gameObject;
         spawnerPlayerLance = chunkPlayerLance.transform.Find(GetPlayerLanceSpawnerName()).gameObject;
-        if (spawnerPlayerLance == null) { 
+        if (spawnerPlayerLance == null) {
           Main.Logger.LogError("[GizmoManager] No active encounters found");
           return;
         }
@@ -208,7 +208,7 @@ namespace BTDebug {
 
       foreach (GameObject lanceSpawn in lanceSpawners) {
         EnableLance(lanceSpawn, SpawnType.NEUTRAL);
-      }  
+      }
     }
 
     private void EnableLance(GameObject spawner, SpawnType type) {
@@ -232,7 +232,7 @@ namespace BTDebug {
           GameObject gizmo = EnableSpawn(mechSpawn, type);
           playerMechSpawnRepresentations.Add(gizmo);
         }
-      } 
+      }
     }
 
     private void DisableLanceSpawns() {
@@ -240,7 +240,7 @@ namespace BTDebug {
         MonoBehaviour.Destroy(spawnerRepresentations);
       }
 
-      foreach(GameObject playerMechSpawnRepresentation in playerMechSpawnRepresentations) {
+      foreach (GameObject playerMechSpawnRepresentation in playerMechSpawnRepresentations) {
         MonoBehaviour.Destroy(playerMechSpawnRepresentation);
       }
     }
@@ -352,7 +352,7 @@ namespace BTDebug {
     private void DisablePlotCentres() {
       foreach (GameObject plotCentreRepresentation in plotCentreRepresentations) {
         MonoBehaviour.Destroy(plotCentreRepresentation);
-      } 
+      }
     }
 
     private bool IsPlotValidForEncounter(Transform plotTransform) {
@@ -383,7 +383,7 @@ namespace BTDebug {
 
     public string GetPlayerLanceChunkName() {
       string type = Contract.ContractTypeValue.Name;
-      
+
       if (type == "ArenaSkirmish") {
         return "MultiPlayerSkirmishChunk";
       } else if (type == "Story_1B_Retreat") {
@@ -395,11 +395,13 @@ namespace BTDebug {
 
     public string GetPlayerLanceSpawnerName() {
       string type = Contract.ContractTypeValue.Name;
-      
+
       if (type == "ArenaSkirmish") {
         return "Player1LanceSpawner";
       } else if ((type == "Story_1B_Retreat") || (type == "FireMission") || (type == "AttackDefend")) {
         return "PlayerLanceSpawner";
+      } else if (type == "ThreeWayBattle") {
+        return "PlayerLanceSpawner_Battle+";
       }
 
       return "Spawner_PlayerLance";

@@ -11,15 +11,6 @@ namespace BTDebug {
   [HarmonyPatch(typeof(UnityGameInstance), "Update")]
   public class UnityGameInstancePatch {
     static void Postfix(UnityGameInstance __instance) {
-      if ((Input.GetKey(KeyCode.LeftAlt) || Input.GetKey(KeyCode.RightAlt)) && Input.GetKeyDown(KeyCode.D)) {
-        string indentation = "";
-        Main.Logger.LogDebug($"[BTDebug] Outting all game objects and components");
-        GameObject[] rootGos = UnityEngine.SceneManagement.SceneManager.GetActiveScene().GetRootGameObjects();
-        foreach (GameObject go in rootGos) {
-          RecursivePrintGameObject(go, indentation);
-        }
-      }
-
       if ((Input.GetKey(KeyCode.LeftAlt) || Input.GetKey(KeyCode.RightAlt)) && Input.GetKeyDown(KeyCode.I)) {
         InspectorManager.GetInstance().ToggleInspector();
       }
@@ -27,7 +18,7 @@ namespace BTDebug {
       if ((Input.GetKey(KeyCode.LeftAlt) || Input.GetKey(KeyCode.RightAlt)) && Input.GetKeyDown(KeyCode.A)) {
         InspectorManager.GetInstance().ToggleDebugMode();
       }
-      
+
       if ((Input.GetKey(KeyCode.LeftAlt) || Input.GetKey(KeyCode.RightAlt)) && Input.GetKeyDown(KeyCode.F)) {
         Main.Logger.LogDebug($"[BTDebug] Toggling Fog of War");
         FogOfWarManager.GetInstance().ToggleFogOfWar();
@@ -72,8 +63,8 @@ namespace BTDebug {
 
           Main.Logger.LogDebug($"{indentation}- [Component] {component.GetType().Name}");
         }
-        
-        foreach(Transform t in go.transform) {
+
+        foreach (Transform t in go.transform) {
           RecursivePrintGameObject(t.gameObject, indentation);
           indentation.Remove(indentation.Length - 2);
         }
