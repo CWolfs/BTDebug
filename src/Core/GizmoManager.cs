@@ -400,6 +400,8 @@ namespace BTDebug {
         return "Player1LanceSpawner";
       } else if ((type == "Story_1B_Retreat") || (type == "FireMission") || (type == "AttackDefend")) {
         return "PlayerLanceSpawner";
+      } else if (type == "ThreeWayBattle") {
+        return "PlayerLanceSpawner_Battle+";
       }
 
       return "Spawner_PlayerLance";
