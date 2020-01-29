@@ -158,8 +158,8 @@ namespace BTDebug {
 
     private void EnableSpawns() {
       if (!spawnerPlayerLance) {
-        chunkPlayerLance = GetActiveEncounterGameObject().transform.Find(GetPlayerLanceChunkName()).gameObject;
-        spawnerPlayerLance = chunkPlayerLance.transform.Find(GetPlayerLanceSpawnerName()).gameObject;
+        chunkPlayerLance = GetPlayerLanceChunk().gameObject;
+        spawnerPlayerLance = GetPlayerLanceSpawner(chunkPlayerLance).gameObject;
         if (spawnerPlayerLance == null) {
           Main.Logger.LogError("[GizmoManager] No active encounters found");
           return;
@@ -371,32 +371,15 @@ namespace BTDebug {
       return null;
     }
 
-    public string GetPlayerLanceChunkName() {
+    public PlayerLanceChunkGameLogic GetPlayerLanceChunk() {
       string type = Contract.ContractTypeValue.Name;
-
-      if (type == "ArenaSkirmish") {
-        return "MultiPlayerSkirmishChunk";
-      } else if (type == "Story_1B_Retreat" || type == "Story_4_LiberationOfWeldry") {
-        return "Gen_PlayerLance";
-      } else if (type == "Story_5_ServedCold") {
-        return "01_InitialSetup/Chunk_PlayerLance";
-      }
-
-      return "Chunk_PlayerLance";
+      GameObject encounterGo = GetActiveEncounterGameObject();
+      return encounterGo.GetComponentInChildren<PlayerLanceChunkGameLogic>();
     }
 
-    public string GetPlayerLanceSpawnerName() {
+    public PlayerLanceSpawnerGameLogic GetPlayerLanceSpawner(GameObject playerChunk) {
       string type = Contract.ContractTypeValue.Name;
-
-      if (type == "ArenaSkirmish") {
-        return "Player1LanceSpawner";
-      } else if ((type == "Story_1B_Retreat") || (type == "FireMission") || (type == "AttackDefend")) {
-        return "PlayerLanceSpawner";
-      } else if (type == "ThreeWayBattle") {
-        return "PlayerLanceSpawner_Battle+";
-      }
-
-      return "Spawner_PlayerLance";
+      return playerChunk.GetComponentInChildren<PlayerLanceSpawnerGameLogic>();
     }
   }
 }
