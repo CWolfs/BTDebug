@@ -2,6 +2,7 @@ using UnityEngine;
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 
 using RuntimeInspectorNamespace;
 
@@ -14,6 +15,14 @@ using BTDebug.Utils;
 
 namespace BTDebug {
   public class GizmoManager {
+    public const string PLAYER_TEAM_ID = "bf40fd39-ccf9-47c4-94a6-061809681140";
+    public const string PLAYER_2_TEAM_ID = "757173dd-b4e1-4bb5-9bee-d78e623cc867";
+    public const string EMPLOYER_TEAM_ID = "ecc8d4f2-74b4-465d-adf6-84445e5dfc230";
+    public const string TARGET_TEAM_ID = "be77cadd-e245-4240-a93e-b99cc98902a5";
+    public const string TARGETS_ALLY_TEAM_ID = "31151ed6-cfc2-467e-98c4-9ae5bea784cf";
+    public const string NEUTRAL_TO_ALL_TEAM_ID = "61612bb3-abf9-4586-952a-0559fa9dcd75";
+    public const string HOSTILE_TO_ALL_TEAM_ID = "3c9f3a20-ab03-4bcb-8ab6-b1ef0442bbf0";
+
     private enum SpawnType { PLAYER_MECH, ENEMY_MECH, ENEMY_TURRET, NEUTRAL };
     private static GizmoManager instance;
 
@@ -171,55 +180,24 @@ namespace BTDebug {
     }
 
     private void EnableEnemyLanceSpawns() {
-      List<GameObject> lanceSpawners = activeEncounter.FindAllContainsRecursive(
-        "Lance_Enemy",
-        "Lance_OpposingForce",
+      LanceSpawnerGameLogic[] lanceSpawnersArray = activeEncounter.GetComponentsInChildren<LanceSpawnerGameLogic>();
+      List<LanceSpawnerGameLogic> lanceSpawners = lanceSpawnersArray.Where(
+        lanceSpawner =>
+          (lanceSpawner.teamDefinitionGuid == TARGET_TEAM_ID) ||
+          (lanceSpawner.teamDefinitionGuid == TARGETS_ALLY_TEAM_ID)
+      ).ToList();
 
-        // mapStory_StoryEncounter1b_vHigh - Story_1B_Retreat
-        "TraitorLance",
-        "Fight2Lance",
-        "03_DestroyLanceSpawner",
-        "TargetLance",
-        "05_MainHostileLanceSpawner",
-        "LanceSpawner",
-
-        // mapStory_StoryEncounter5_iGlc - Story_5_ServedCold_Default
-        "Lance_FourHeadedDragon",
-
-        // mapStory_StoryEncounter4_iGlc - Story_4_LiberationOfWeldry
-        "01_GateHouses",
-        "Spawner_InternalDefenseTurrets",
-        "02_DestroyLance_Garrison",
-        "03_DestroyLance_Reinforcements",
-
-        // ArenaSkirmish
-        "Player2LanceSpawner"
-      );
-
-      foreach (GameObject lanceSpawn in lanceSpawners) {
-        EnableLance(lanceSpawn, SpawnType.ENEMY_MECH);
+      foreach (LanceSpawnerGameLogic lanceSpawn in lanceSpawners) {
+        EnableLance(lanceSpawn.gameObject, SpawnType.ENEMY_MECH);
       }
     }
 
     private void EnableNeutralLanceSpawns() {
-      List<GameObject> lanceSpawners = activeEncounter.FindAllContainsRecursive(
-        "Lance_Neutral",
-        "Lance_Escort",
-        "Lance_Ally",         // Mission Control
+      LanceSpawnerGameLogic[] lanceSpawnersArray = activeEncounter.GetComponentsInChildren<LanceSpawnerGameLogic>();
+      List<LanceSpawnerGameLogic> lanceSpawners = lanceSpawnersArray.Where(lanceSpawner => lanceSpawner.teamDefinitionGuid == EMPLOYER_TEAM_ID).ToList();
 
-        // mapStory_StoryEncounter1b_vHigh - Story_1B_Retreat
-        "AranoFriendlyLance",
-        "NeutralLance",
-
-        // mapStory_StoryEncounter4_iGlc - Story_4_LiberationOfWeldry
-        "04_KameaReinforce",
-
-        // FireMission
-        "Lance_Employer"
-      );
-
-      foreach (GameObject lanceSpawn in lanceSpawners) {
-        EnableLance(lanceSpawn, SpawnType.NEUTRAL);
+      foreach (LanceSpawnerGameLogic lanceSpawn in lanceSpawners) {
+        EnableLance(lanceSpawn.gameObject, SpawnType.NEUTRAL);
       }
     }
 
@@ -238,12 +216,10 @@ namespace BTDebug {
 
       spawnerRepresentations.Add(placeholderPoint);
 
-      foreach (Transform t in spawner.transform) {
-        GameObject mechSpawn = t.gameObject;
-        if (mechSpawn.name.Contains("SpawnPoint")) {
-          GameObject gizmo = EnableSpawn(mechSpawn, type);
-          playerMechSpawnRepresentations.Add(gizmo);
-        }
+      UnitSpawnPointGameLogic[] unitSpawnArray = spawner.GetComponentsInChildren<UnitSpawnPointGameLogic>();
+      foreach (UnitSpawnPointGameLogic unitSpawnPoint in unitSpawnArray) {
+        GameObject gizmo = EnableSpawn(unitSpawnPoint.gameObject, type);
+        playerMechSpawnRepresentations.Add(gizmo);
       }
     }
 
