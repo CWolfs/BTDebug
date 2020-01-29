@@ -175,13 +175,16 @@ namespace BTDebug {
         "Lance_Enemy",
         "Lance_OpposingForce",
 
-        // mapStory_StoryEncounter1b_vHigh - Story_1B_Retreat,
+        // mapStory_StoryEncounter1b_vHigh - Story_1B_Retreat
         "TraitorLance",
         "Fight2Lance",
         "03_DestroyLanceSpawner",
         "TargetLance",
         "05_MainHostileLanceSpawner",
         "LanceSpawner",
+
+        // mapStory_StoryEncounter5_iGlc - Story_5_ServedCold_Default
+        "Lance_FourHeadedDragon",
 
         // ArenaSkirmish
         "Player2LanceSpawner"
@@ -390,7 +393,7 @@ namespace BTDebug {
         return "MultiPlayerSkirmishChunk";
       } else if (type == "Story_1B_Retreat") {
         return "Gen_PlayerLance";
-      } else if (type == "Story_5_ServedCold_Default") {
+      } else if (type == "Story_5_ServedCold") {
         return "01_InitialSetup/Chunk_PlayerLance";
       }
 
