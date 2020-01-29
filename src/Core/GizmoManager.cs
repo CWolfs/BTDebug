@@ -186,6 +186,12 @@ namespace BTDebug {
         // mapStory_StoryEncounter5_iGlc - Story_5_ServedCold_Default
         "Lance_FourHeadedDragon",
 
+        // mapStory_StoryEncounter4_iGlc - Story_4_LiberationOfWeldry
+        "01_GateHouses",
+        "Spawner_InternalDefenseTurrets",
+        "02_DestroyLance_Garrison",
+        "03_DestroyLance_Reinforcements",
+
         // ArenaSkirmish
         "Player2LanceSpawner"
       );
@@ -204,6 +210,9 @@ namespace BTDebug {
         // mapStory_StoryEncounter1b_vHigh - Story_1B_Retreat
         "AranoFriendlyLance",
         "NeutralLance",
+
+        // mapStory_StoryEncounter4_iGlc - Story_4_LiberationOfWeldry
+        "04_KameaReinforce",
 
         // FireMission
         "Lance_Employer"
@@ -391,7 +400,7 @@ namespace BTDebug {
 
       if (type == "ArenaSkirmish") {
         return "MultiPlayerSkirmishChunk";
-      } else if (type == "Story_1B_Retreat") {
+      } else if (type == "Story_1B_Retreat" || type == "Story_4_LiberationOfWeldry") {
         return "Gen_PlayerLance";
       } else if (type == "Story_5_ServedCold") {
         return "01_InitialSetup/Chunk_PlayerLance";
