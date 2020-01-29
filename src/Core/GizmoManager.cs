@@ -374,8 +374,10 @@ namespace BTDebug {
       foreach (Transform t in encounterLayerParentGO.transform) {
         GameObject child = t.gameObject;
         if (child.activeSelf) {
-          activeEncounter = t.gameObject;
-          return activeEncounter;
+          if (t.GetComponent<EncounterLayerData>()) {
+            activeEncounter = t.gameObject;
+            return activeEncounter;
+          }
         }
       }
       return null;
@@ -388,6 +390,8 @@ namespace BTDebug {
         return "MultiPlayerSkirmishChunk";
       } else if (type == "Story_1B_Retreat") {
         return "Gen_PlayerLance";
+      } else if (type == "Story_5_ServedCold_Default") {
+        return "01_InitialSetup/Chunk_PlayerLance";
       }
 
       return "Chunk_PlayerLance";
