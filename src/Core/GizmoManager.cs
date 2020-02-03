@@ -255,8 +255,13 @@ namespace BTDebug {
       return placeholderPoint;
     }
 
+    private EncounterBoundaryChunkGameLogic GetBoundaryChunk() {
+      GameObject encounterGo = GetActiveEncounterGameObject();
+      return encounterGo.GetComponentInChildren<EncounterBoundaryChunkGameLogic>();
+    }
+
     private void EnableBoundary() {
-      GameObject chunkBoundaryRect = activeEncounter.transform.Find("Chunk_EncounterBoundary").gameObject;
+      GameObject chunkBoundaryRect = GetBoundaryChunk().gameObject;
       GameObject boundary = chunkBoundaryRect.transform.Find("EncounterBoundaryRect").gameObject;
       EncounterBoundaryChunkGameLogic chunkBoundaryLogic = chunkBoundaryRect.GetComponent<EncounterBoundaryChunkGameLogic>();
       EncounterBoundaryRectGameLogic boundaryLogic = boundary.GetComponent<EncounterBoundaryRectGameLogic>();
