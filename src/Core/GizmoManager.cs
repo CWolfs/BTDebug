@@ -194,7 +194,7 @@ namespace BTDebug {
 
     private void EnableNeutralLanceSpawns() {
       LanceSpawnerGameLogic[] lanceSpawnersArray = activeEncounter.GetComponentsInChildren<LanceSpawnerGameLogic>();
-      List<LanceSpawnerGameLogic> lanceSpawners = lanceSpawnersArray.Where(lanceSpawner => lanceSpawner.teamDefinitionGuid == EMPLOYER_TEAM_ID).ToList();
+      List<LanceSpawnerGameLogic> lanceSpawners = lanceSpawnersArray.Where(lanceSpawner => (lanceSpawner.teamDefinitionGuid == EMPLOYER_TEAM_ID || lanceSpawner.teamDefinitionGuid == NEUTRAL_TO_ALL_TEAM_ID)).ToList();
 
       foreach (LanceSpawnerGameLogic lanceSpawn in lanceSpawners) {
         EnableLance(lanceSpawn.gameObject, SpawnType.NEUTRAL);
