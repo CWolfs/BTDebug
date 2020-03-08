@@ -334,7 +334,7 @@ namespace BTDebug {
           placeholderPoint.name = "PlotCentreGizmo";
           placeholderPoint.transform.parent = t;
           placeholderPoint.transform.position = t.position;
-          placeholderPoint.transform.localScale = new Vector3(5, 5, 5);
+          placeholderPoint.transform.localScale = new Vector3(5, 200, 5);
 
           placeholderPoint.GetComponent<Renderer>().sharedMaterial = plotMaterial;
           plotCentreRepresentations.Add(placeholderPoint);
