@@ -327,17 +327,20 @@ namespace BTDebug {
 
     private void EnablePlotCentres() {
       GameObject plotsParentGo = GameObject.Find("PlotParent");
-      foreach (Transform t in plotsParentGo.transform) {
-        Vector3 plotPosition = t.position;
-        if (IsPlotValidForEncounter(t)) {
-          GameObject placeholderPoint = GameObject.CreatePrimitive(PrimitiveType.Cube);
-          placeholderPoint.name = "PlotCentreGizmo";
-          placeholderPoint.transform.parent = t;
-          placeholderPoint.transform.position = t.position;
-          placeholderPoint.transform.localScale = new Vector3(5, 200, 5);
+      foreach (Transform plot in plotsParentGo.transform) {
+        Vector3 plotPosition = plot.position;
 
-          placeholderPoint.GetComponent<Renderer>().sharedMaterial = plotMaterial;
-          plotCentreRepresentations.Add(placeholderPoint);
+        foreach (Transform variant in plot) {
+          if (IsPlotValidForEncounter(variant)) {
+            GameObject placeholderPoint = GameObject.CreatePrimitive(PrimitiveType.Cube);
+            placeholderPoint.name = "PlotCentreGizmo";
+            placeholderPoint.transform.parent = variant.transform;
+            placeholderPoint.transform.position = variant.transform.position;
+            placeholderPoint.transform.localScale = new Vector3(5, 200, 5);
+
+            placeholderPoint.GetComponent<Renderer>().sharedMaterial = plotMaterial;
+            plotCentreRepresentations.Add(placeholderPoint);
+          }
         }
       }
     }
@@ -348,16 +351,10 @@ namespace BTDebug {
       }
     }
 
-    private bool IsPlotValidForEncounter(Transform plotTransform) {
-      Transform selectedPlotTransform = plotTransform.FindIgnoreCaseStartsWith("PlotVariant");
-
-      if (selectedPlotTransform == null) {
-        return false;
+    private bool IsPlotValidForEncounter(Transform plotVariantTransform) {
+      if (plotVariantTransform.gameObject.activeSelf) {
+        return plotVariantTransform.gameObject.name.ToLower().StartsWith("plotvariant");
       }
-
-      GameObject selectedPlotGo = selectedPlotTransform.gameObject;
-      if (selectedPlotGo.activeSelf) return true;
-
       return false;
     }
 
