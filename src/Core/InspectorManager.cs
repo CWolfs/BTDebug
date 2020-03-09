@@ -1,5 +1,6 @@
 using UnityEngine;
-using System;
+
+using BattleTech;
 
 using RuntimeInspectorNamespace;
 
@@ -15,7 +16,7 @@ namespace BTDebug {
 
     public bool IsInspectorShowing { get; private set; } = false;
 
-    public static InspectorManager GetInstance() { 
+    public static InspectorManager GetInstance() {
       if (instance == null) instance = new InspectorManager();
       return instance;
     }
@@ -43,15 +44,25 @@ namespace BTDebug {
 
       if (inspectorGO) {
         RuntimeInspector inspector = inspectorGO.GetComponentInChildren<RuntimeInspector>();
-        inspector.DebugMode = debugMode;  
+        inspector.DebugMode = debugMode;
       }
     }
 
     public void ToggleInspector() {
       if (IsInspectorShowing) {
         HideInspector();
+
+        if (Main.Settings.inspectorDisableGameInput) {
+          BTInput.Instance.DynamicActions.Enabled = true;
+          BTInput.Instance.StaticActions.Enabled = true;
+        }
       } else {
         ShowInspector();
+
+        if (Main.Settings.inspectorDisableGameInput) {
+          BTInput.Instance.DynamicActions.Enabled = false;
+          BTInput.Instance.StaticActions.Enabled = false;
+        }
       }
     }
 
