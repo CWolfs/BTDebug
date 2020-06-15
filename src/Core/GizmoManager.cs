@@ -2,6 +2,7 @@ using UnityEngine;
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 
 using RuntimeInspectorNamespace;
 
@@ -14,6 +15,14 @@ using BTDebug.Utils;
 
 namespace BTDebug {
   public class GizmoManager {
+    public const string PLAYER_TEAM_ID = "bf40fd39-ccf9-47c4-94a6-061809681140";
+    public const string PLAYER_2_TEAM_ID = "757173dd-b4e1-4bb5-9bee-d78e623cc867";
+    public const string EMPLOYER_TEAM_ID = "ecc8d4f2-74b4-465d-adf6-84445e5dfc230";
+    public const string TARGET_TEAM_ID = "be77cadd-e245-4240-a93e-b99cc98902a5";
+    public const string TARGETS_ALLY_TEAM_ID = "31151ed6-cfc2-467e-98c4-9ae5bea784cf";
+    public const string NEUTRAL_TO_ALL_TEAM_ID = "61612bb3-abf9-4586-952a-0559fa9dcd75";
+    public const string HOSTILE_TO_ALL_TEAM_ID = "3c9f3a20-ab03-4bcb-8ab6-b1ef0442bbf0";
+
     private enum SpawnType { PLAYER_MECH, ENEMY_MECH, ENEMY_TURRET, NEUTRAL };
     private static GizmoManager instance;
 
@@ -149,8 +158,8 @@ namespace BTDebug {
 
     private void EnableSpawns() {
       if (!spawnerPlayerLance) {
-        chunkPlayerLance = GetActiveEncounterGameObject().transform.Find(GetPlayerLanceChunkName()).gameObject;
-        spawnerPlayerLance = chunkPlayerLance.transform.Find(GetPlayerLanceSpawnerName()).gameObject;
+        chunkPlayerLance = GetPlayerLanceChunk().gameObject;
+        spawnerPlayerLance = GetPlayerLanceSpawner(chunkPlayerLance).gameObject;
         if (spawnerPlayerLance == null) {
           Main.Logger.LogError("[GizmoManager] No active encounters found");
           return;
@@ -171,43 +180,24 @@ namespace BTDebug {
     }
 
     private void EnableEnemyLanceSpawns() {
-      List<GameObject> lanceSpawners = activeEncounter.FindAllContainsRecursive(
-        "Lance_Enemy",
-        "Lance_OpposingForce",
+      LanceSpawnerGameLogic[] lanceSpawnersArray = activeEncounter.GetComponentsInChildren<LanceSpawnerGameLogic>();
+      List<LanceSpawnerGameLogic> lanceSpawners = lanceSpawnersArray.Where(
+        lanceSpawner =>
+          (lanceSpawner.teamDefinitionGuid == TARGET_TEAM_ID) ||
+          (lanceSpawner.teamDefinitionGuid == TARGETS_ALLY_TEAM_ID)
+      ).ToList();
 
-        // mapStory_StoryEncounter1b_vHigh - Story_1B_Retreat,
-        "TraitorLance",
-        "Fight2Lance",
-        "03_DestroyLanceSpawner",
-        "TargetLance",
-        "05_MainHostileLanceSpawner",
-        "LanceSpawner",
-
-        // ArenaSkirmish
-        "Player2LanceSpawner"
-      );
-
-      foreach (GameObject lanceSpawn in lanceSpawners) {
-        EnableLance(lanceSpawn, SpawnType.ENEMY_MECH);
+      foreach (LanceSpawnerGameLogic lanceSpawn in lanceSpawners) {
+        EnableLance(lanceSpawn.gameObject, SpawnType.ENEMY_MECH);
       }
     }
 
     private void EnableNeutralLanceSpawns() {
-      List<GameObject> lanceSpawners = activeEncounter.FindAllContainsRecursive(
-        "Lance_Neutral",
-        "Lance_Escort",
-        "Lance_Ally",         // Mission Control
+      LanceSpawnerGameLogic[] lanceSpawnersArray = activeEncounter.GetComponentsInChildren<LanceSpawnerGameLogic>();
+      List<LanceSpawnerGameLogic> lanceSpawners = lanceSpawnersArray.Where(lanceSpawner => (lanceSpawner.teamDefinitionGuid == EMPLOYER_TEAM_ID || lanceSpawner.teamDefinitionGuid == NEUTRAL_TO_ALL_TEAM_ID)).ToList();
 
-        // mapStory_StoryEncounter1b_vHigh - Story_1B_Retreat
-        "AranoFriendlyLance",
-        "NeutralLance",
-
-        // FireMission
-        "Lance_Employer"
-      );
-
-      foreach (GameObject lanceSpawn in lanceSpawners) {
-        EnableLance(lanceSpawn, SpawnType.NEUTRAL);
+      foreach (LanceSpawnerGameLogic lanceSpawn in lanceSpawners) {
+        EnableLance(lanceSpawn.gameObject, SpawnType.NEUTRAL);
       }
     }
 
@@ -226,12 +216,10 @@ namespace BTDebug {
 
       spawnerRepresentations.Add(placeholderPoint);
 
-      foreach (Transform t in spawner.transform) {
-        GameObject mechSpawn = t.gameObject;
-        if (mechSpawn.name.Contains("SpawnPoint")) {
-          GameObject gizmo = EnableSpawn(mechSpawn, type);
-          playerMechSpawnRepresentations.Add(gizmo);
-        }
+      UnitSpawnPointGameLogic[] unitSpawnArray = spawner.GetComponentsInChildren<UnitSpawnPointGameLogic>();
+      foreach (UnitSpawnPointGameLogic unitSpawnPoint in unitSpawnArray) {
+        GameObject gizmo = EnableSpawn(unitSpawnPoint.gameObject, type);
+        playerMechSpawnRepresentations.Add(gizmo);
       }
     }
 
@@ -267,8 +255,13 @@ namespace BTDebug {
       return placeholderPoint;
     }
 
+    private EncounterBoundaryChunkGameLogic GetBoundaryChunk() {
+      GameObject encounterGo = GetActiveEncounterGameObject();
+      return encounterGo.GetComponentInChildren<EncounterBoundaryChunkGameLogic>();
+    }
+
     private void EnableBoundary() {
-      GameObject chunkBoundaryRect = activeEncounter.transform.Find("Chunk_EncounterBoundary").gameObject;
+      GameObject chunkBoundaryRect = GetBoundaryChunk().gameObject;
       GameObject boundary = chunkBoundaryRect.transform.Find("EncounterBoundaryRect").gameObject;
       EncounterBoundaryChunkGameLogic chunkBoundaryLogic = chunkBoundaryRect.GetComponent<EncounterBoundaryChunkGameLogic>();
       EncounterBoundaryRectGameLogic boundaryLogic = boundary.GetComponent<EncounterBoundaryRectGameLogic>();
@@ -334,17 +327,20 @@ namespace BTDebug {
 
     private void EnablePlotCentres() {
       GameObject plotsParentGo = GameObject.Find("PlotParent");
-      foreach (Transform t in plotsParentGo.transform) {
-        Vector3 plotPosition = t.position;
-        if (IsPlotValidForEncounter(t)) {
-          GameObject placeholderPoint = GameObject.CreatePrimitive(PrimitiveType.Cube);
-          placeholderPoint.name = "PlotCentreGizmo";
-          placeholderPoint.transform.parent = t;
-          placeholderPoint.transform.position = t.position;
-          placeholderPoint.transform.localScale = new Vector3(5, 5, 5);
+      foreach (Transform plot in plotsParentGo.transform) {
+        Vector3 plotPosition = plot.position;
 
-          placeholderPoint.GetComponent<Renderer>().sharedMaterial = plotMaterial;
-          plotCentreRepresentations.Add(placeholderPoint);
+        foreach (Transform variant in plot) {
+          if (IsPlotValidForEncounter(variant)) {
+            GameObject placeholderPoint = GameObject.CreatePrimitive(PrimitiveType.Cube);
+            placeholderPoint.name = "PlotCentreGizmo";
+            placeholderPoint.transform.parent = variant.transform;
+            placeholderPoint.transform.position = variant.transform.position;
+            placeholderPoint.transform.localScale = new Vector3(5, 200, 5);
+
+            placeholderPoint.GetComponent<Renderer>().sharedMaterial = plotMaterial;
+            plotCentreRepresentations.Add(placeholderPoint);
+          }
         }
       }
     }
@@ -355,16 +351,10 @@ namespace BTDebug {
       }
     }
 
-    private bool IsPlotValidForEncounter(Transform plotTransform) {
-      Transform selectedPlotTransform = plotTransform.FindIgnoreCaseStartsWith("PlotVariant");
-
-      if (selectedPlotTransform == null) {
-        return false;
+    private bool IsPlotValidForEncounter(Transform plotVariantTransform) {
+      if (plotVariantTransform.gameObject.activeSelf) {
+        return plotVariantTransform.gameObject.name.ToLower().StartsWith("plotvariant");
       }
-
-      GameObject selectedPlotGo = selectedPlotTransform.gameObject;
-      if (selectedPlotGo.activeSelf) return true;
-
       return false;
     }
 
@@ -374,37 +364,24 @@ namespace BTDebug {
       foreach (Transform t in encounterLayerParentGO.transform) {
         GameObject child = t.gameObject;
         if (child.activeSelf) {
-          activeEncounter = t.gameObject;
-          return activeEncounter;
+          if (t.GetComponent<EncounterLayerData>()) {
+            activeEncounter = t.gameObject;
+            return activeEncounter;
+          }
         }
       }
       return null;
     }
 
-    public string GetPlayerLanceChunkName() {
+    public PlayerLanceChunkGameLogic GetPlayerLanceChunk() {
       string type = Contract.ContractTypeValue.Name;
-
-      if (type == "ArenaSkirmish") {
-        return "MultiPlayerSkirmishChunk";
-      } else if (type == "Story_1B_Retreat") {
-        return "Gen_PlayerLance";
-      }
-
-      return "Chunk_PlayerLance";
+      GameObject encounterGo = GetActiveEncounterGameObject();
+      return encounterGo.GetComponentInChildren<PlayerLanceChunkGameLogic>();
     }
 
-    public string GetPlayerLanceSpawnerName() {
+    public PlayerLanceSpawnerGameLogic GetPlayerLanceSpawner(GameObject playerChunk) {
       string type = Contract.ContractTypeValue.Name;
-
-      if (type == "ArenaSkirmish") {
-        return "Player1LanceSpawner";
-      } else if ((type == "Story_1B_Retreat") || (type == "FireMission") || (type == "AttackDefend")) {
-        return "PlayerLanceSpawner";
-      } else if (type == "ThreeWayBattle") {
-        return "PlayerLanceSpawner_Battle+";
-      }
-
-      return "Spawner_PlayerLance";
+      return playerChunk.GetComponentInChildren<PlayerLanceSpawnerGameLogic>();
     }
   }
 }

@@ -3,14 +3,14 @@ using System.Collections;
 using System.Collections.Generic;
 
 public static class TransformExtensions {
-  public static List<T> FindObjectsWithinProximity<T>(this Transform transform, float proximity) where T : MonoBehaviour{  
-    List<T> objects = new List<T> ();
+  public static List<T> FindObjectsWithinProximity<T>(this Transform transform, float proximity) where T : MonoBehaviour {
+    List<T> objects = new List<T>();
 
-    T[] foundObjects = GameObject.FindObjectsOfType<T> ();
-    for(int x = 0; x<foundObjects.Length; x++){
-      T obj = foundObjects [x];
+    T[] foundObjects = GameObject.FindObjectsOfType<T>();
+    for (int x = 0; x < foundObjects.Length; x++) {
+      T obj = foundObjects[x];
       if ((obj.transform.position - transform.position).magnitude <= proximity) {
-        objects.Add (obj);
+        objects.Add(obj);
       }
     }
 
@@ -33,6 +33,16 @@ public static class TransformExtensions {
       if (t.name.ToLower().StartsWith(checkName.ToLower())) return t;
     }
 
-    return null; 
+    return null;
+  }
+
+  public static List<Transform> FindMultipleIgnoreCaseStartsWith(this Transform transform, string checkName) {
+    List<Transform> transforms = new List<Transform>();
+
+    foreach (Transform t in transform) {
+      if (t.name.ToLower().StartsWith(checkName.ToLower())) transforms.Add(t);
+    }
+
+    return transforms;
   }
 }
