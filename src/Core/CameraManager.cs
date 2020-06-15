@@ -15,9 +15,12 @@ namespace BTDebug {
   public class CameraManager {
     private static CameraManager instance;
     private static string CombatGameCameraGOName = "GameCamera(Clone)";
+    private static string SimGameCameraGOName = "Camera_SimGame";
+    private static string SpaceCameraGOName = "Camera_Space";
 
     public bool IsFreeformCameraEnabled { get; private set; } = false;
     public bool IsUiEnabled { get; private set; } = true;
+    public bool IsInSimGame { get; private set; } = false;
 
     private GameObject GameCameraObject { get; set; }
     private CameraControl CameraControl { get; set; }
@@ -30,7 +33,7 @@ namespace BTDebug {
 
     private GameObject UiManagerGo { get; set; }
 
-    public static CameraManager GetInstance() { 
+    public static CameraManager GetInstance() {
       if (instance == null) instance = new CameraManager();
       return instance;
     }
@@ -56,8 +59,8 @@ namespace BTDebug {
         originalCameraFarClipPlane = Camera.farClipPlane;
         Camera.fieldOfView = 60;
         Camera.farClipPlane = 9999;
-        CameraControl.DEBUG_TakeCompleteControl = true;
-        
+        if (!IsInSimGame) CameraControl.DEBUG_TakeCompleteControl = true;
+
         if (!FreeFormCamera) {
           FreeFormCamera = GameCameraObject.AddComponent<FreeFormCamera>();
         }
@@ -67,12 +70,22 @@ namespace BTDebug {
       } else {
         Main.Logger.LogDebug($"[BTDebug] Turning Freeform Camera is OFF");
 
-        CameraControl.DEBUG_TakeCompleteControl = false;
+        if (!IsInSimGame) CameraControl.DEBUG_TakeCompleteControl = false;
         Camera.fieldOfView = originalCameraFoV;
         Camera.farClipPlane = originalCameraFarClipPlane;
-        if (FreeFormCamera) FreeFormCamera.enabled = false;
+        if (FreeFormCamera) {
+          FreeFormCamera.enabled = false;
+          MonoBehaviour.Destroy(FreeFormCamera);
+        }
 
         IsFreeformCameraEnabled = false;
+
+        // Reset GOs
+        GameCameraObject = null;
+        CameraControl = null;
+        Camera = null;
+        DebugFlyCameraControl = null;
+        FreeFormCamera = null;
       }
     }
 
@@ -103,18 +116,32 @@ namespace BTDebug {
     }
 
     private bool SetupCamera() {
+      Main.Logger.LogDebug($"[BTDebug] Room {UnityGameInstance.BattleTechGame.Simulation.CurRoomState}");
       if (!GameCameraObject) {
         GameCameraObject = GameObject.Find(CombatGameCameraGOName);
+        if (GameCameraObject == null) {
+          IsInSimGame = true;
+          if (UnityGameInstance.BattleTechGame.Simulation.CurRoomState == DropshipLocation.SHIP) {
+            GameCameraObject = GameObject.Find(SpaceCameraGOName);
+          } else {
+            GameCameraObject = GameObject.Find(SimGameCameraGOName);
+          }
+        } else {
+          IsInSimGame = false;
+        }
+
         if (!GameCameraObject) return false;
-        
-        CameraControl = GameCameraObject.GetComponent<CameraControl>();
-        if (!CameraControl) return false;
+
+        if (!IsInSimGame) {
+          CameraControl = GameCameraObject.GetComponent<CameraControl>();
+          if (!CameraControl) return false;
+
+          DebugFlyCameraControl = GameCameraObject.GetComponent<DebugFlyCameraControl>();
+          if (!DebugFlyCameraControl) return false;
+        }
 
         Camera = GameCameraObject.GetComponentInChildren<Camera>();
         if (!Camera) return false;
-
-        DebugFlyCameraControl = GameCameraObject.GetComponent<DebugFlyCameraControl>();
-        if (!DebugFlyCameraControl) return false;
       }
       return true;
     }
