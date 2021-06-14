@@ -59,7 +59,7 @@ namespace BTDebug {
         originalCameraFarClipPlane = Camera.farClipPlane;
         Camera.fieldOfView = 60;
         Camera.farClipPlane = 9999;
-        if (!IsInSimGame) CameraControl.DEBUG_TakeCompleteControl = true;
+        if (!IsInSimGame && CameraControl) CameraControl.DEBUG_TakeCompleteControl = true;
 
         if (!FreeFormCamera) {
           FreeFormCamera = GameCameraObject.AddComponent<FreeFormCamera>();
@@ -70,7 +70,7 @@ namespace BTDebug {
       } else {
         Main.Logger.LogDebug($"[BTDebug] Turning Freeform Camera is OFF");
 
-        if (!IsInSimGame) CameraControl.DEBUG_TakeCompleteControl = false;
+        if (!IsInSimGame && CameraControl) CameraControl.DEBUG_TakeCompleteControl = false;
         Camera.fieldOfView = originalCameraFoV;
         Camera.farClipPlane = originalCameraFarClipPlane;
         if (FreeFormCamera) {
@@ -116,7 +116,6 @@ namespace BTDebug {
     }
 
     private bool SetupCamera() {
-      Main.Logger.LogDebug($"[BTDebug] Room {UnityGameInstance.BattleTechGame.Simulation.CurRoomState}");
       if (!GameCameraObject) {
         GameCameraObject = GameObject.Find(CombatGameCameraGOName);
         if (GameCameraObject == null) {
@@ -132,7 +131,7 @@ namespace BTDebug {
 
         if (!GameCameraObject) return false;
 
-        if (!IsInSimGame) {
+        if (!IsInSimGame && CameraControl) {
           CameraControl = GameCameraObject.GetComponent<CameraControl>();
           if (!CameraControl) return false;
 
