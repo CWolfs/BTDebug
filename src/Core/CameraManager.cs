@@ -116,7 +116,6 @@ namespace BTDebug {
     }
 
     private bool SetupCamera() {
-      Main.Logger.LogDebug($"[BTDebug] Room {UnityGameInstance.BattleTechGame.Simulation.CurRoomState}");
       if (!GameCameraObject) {
         GameCameraObject = GameObject.Find(CombatGameCameraGOName);
         if (GameCameraObject == null) {

@@ -5,10 +5,7 @@
       "label": "build",
       "command": "dotnet",
       "type": "process",
-      "args": [
-        "build",
-        "D:/Modding/Battletech/BTDebug/src/BTDebug.csproj"
-      ],
+      "args": ["build", "E:/modding/BTDebug/src/BTDebug.csproj"],
       "problemMatcher": "$msCompile"
     },
     {
@@ -16,17 +13,8 @@
       "type": "shell",
       "command": "cp",
       "args": [
-        "D:/Modding/Battletech/BTDebug/src/bin/Debug/net471/BTDebug.dll",
+        "E:/modding/BTDebug/src/bin/Debug/net471/BTDebug.dll",
         "'D:/Program Files (x86)/Steam/steamapps/common/BATTLETECH/Mods/BTDebug'"
-      ]
-    },
-    {
-      "label": "copy (hbs)",
-      "type": "shell",
-      "command": "cp",
-      "args": [
-        "D:/Modding/Battletech/BTDebug/src/bin/Debug/net471/BTDebug.dll",
-        "'C:/Users/Rich/Documents/my games/BattleTech/mods/HBS/BTDebug'"
       ]
     }
   ]
