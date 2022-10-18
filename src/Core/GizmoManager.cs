@@ -208,8 +208,7 @@ namespace BTDebug {
       placeholderPoint.transform.localPosition = Vector3.zero;
 
       Vector3 position = spawner.transform.position;
-      Vector3 hexPosition = hexGrid.GetClosestPointOnGrid(position);
-      placeholderPoint.transform.position = hexPosition;
+      placeholderPoint.transform.position = position;
 
       placeholderPoint.transform.localScale = new Vector3(100, 100, 100);
       placeholderPoint.GetComponent<Renderer>().sharedMaterial = spawnAreaMaterial;
@@ -240,8 +239,7 @@ namespace BTDebug {
       placeholderPoint.transform.localPosition = Vector3.zero;
 
       Vector3 position = target.transform.position;
-      Vector3 hexPosition = hexGrid.GetClosestPointOnGrid(position);
-      placeholderPoint.transform.position = hexPosition;
+      placeholderPoint.transform.position = position;
       placeholderPoint.transform.localScale = new Vector3(10, 10, 10);
 
       if (type == SpawnType.PLAYER_MECH) {
