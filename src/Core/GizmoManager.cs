@@ -260,9 +260,9 @@ namespace BTDebug {
 
     private void EnableBoundary() {
       GameObject chunkBoundaryRect = GetBoundaryChunk().gameObject;
-      GameObject boundary = chunkBoundaryRect.transform.Find("EncounterBoundaryRect").gameObject;
       EncounterBoundaryChunkGameLogic chunkBoundaryLogic = chunkBoundaryRect.GetComponent<EncounterBoundaryChunkGameLogic>();
-      EncounterBoundaryRectGameLogic boundaryLogic = boundary.GetComponent<EncounterBoundaryRectGameLogic>();
+      EncounterBoundaryRectGameLogic boundaryLogic = chunkBoundaryRect.GetComponentInChildren<EncounterBoundaryRectGameLogic>();
+      GameObject boundary = boundaryLogic.gameObject;
 
       Rect boundaryRec = boundaryLogic.GetRect();
       Rect usableBoundary = boundaryRec.GenerateUsableBoundary();
