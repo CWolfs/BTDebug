@@ -1,6 +1,6 @@
 using UnityEngine;
-using System.Collections;
-using System.Collections.Generic;
+
+using BattleTech;
 
 namespace BTDebug.BTCamera {
   public class FreeFormCamera : MonoBehaviour {
@@ -8,6 +8,9 @@ namespace BTDebug.BTCamera {
     private float maxClamp = 10f;
     private float rotSpeed = 10f;
     private float dragSpeed = 3f;
+    private float combatSpeedFactor = 1f;
+    private float simGameSpeedFactor = 0.5f;
+    private float speedFactor = 1f;
 
     private Transform mTransform;
     private float mouseAxis = 0f;
@@ -23,6 +26,9 @@ namespace BTDebug.BTCamera {
     private Vector3 angles;
     public float speed = 1.0f;
     public float fastSpeed = 2.0f;
+
+    public float combatMouseSpeed = 90.0f;
+    public float simGameMouseSpeed = 70.0f;
     public float mouseSpeed = 90.0f;
 
     private Vector3 camLastPos = Vector3.one;
@@ -34,10 +40,18 @@ namespace BTDebug.BTCamera {
       angles.x = localEulerAngles.x;
       angles.y = localEulerAngles.y;
     }
-    
+
     // Update is called once per frame
     void Update() {
       if (CameraManager.GetInstance().IsFreeformCameraEnabled) {
+        if (UnityGameInstance.Instance.Game.Combat != null) {
+          speedFactor = combatSpeedFactor;
+          mouseSpeed = combatMouseSpeed;
+        } else {
+          speedFactor = simGameSpeedFactor;
+          mouseSpeed = simGameMouseSpeed;
+        }
+
         MouseLook();
         XYMiddleMouseMovement();
         Zoom();
@@ -48,27 +62,27 @@ namespace BTDebug.BTCamera {
     private void MouseLook() {
       if (Input.GetMouseButton(1)) {
         // Read the mouse input axis
-        angles.x -= Input.GetAxis("Mouse Y") * mouseSpeed * Time.deltaTime;
-        angles.y += Input.GetAxis("Mouse X") * mouseSpeed * Time.deltaTime;        
+        angles.x -= Input.GetAxis("Mouse Y") * (mouseSpeed * speedFactor) * Time.deltaTime;
+        angles.y += Input.GetAxis("Mouse X") * (mouseSpeed * speedFactor) * Time.deltaTime;
         transform.eulerAngles = angles;
 
- 
+
         // Keyboard commands
         Vector3 p = GetBaseInput();
         if (Input.GetKey(KeyCode.LeftShift)) {
           totalRun += Time.deltaTime;
-          p  = p * totalRun * shiftAdd;
+          p = p * totalRun * shiftAdd;
           p.x = Mathf.Clamp(p.x, -maxShift, maxShift);
           p.y = Mathf.Clamp(p.y, -maxShift, maxShift);
           p.z = Mathf.Clamp(p.z, -maxShift, maxShift);
         } else {
           totalRun = Mathf.Clamp(totalRun * 0.5f, 1f, 1000f);
-          p = p * mainSpeed;
+          p = p * mainSpeed * speedFactor;
         }
-        
+
         p = p * Time.deltaTime;
         Vector3 newPosition = mTransform.position;
-        if (Input.GetKey(KeyCode.Space)){ // If player wants to move on X and Z axis only
+        if (Input.GetKey(KeyCode.Space)) { // If player wants to move on X and Z axis only
           mTransform.Translate(p);
           newPosition.x = mTransform.position.x;
           newPosition.z = mTransform.position.z;
@@ -81,30 +95,30 @@ namespace BTDebug.BTCamera {
 
     private Vector3 GetBaseInput() { // Returns the basic values, if it's 0 than it's not active.
       Vector3 p_Velocity = new Vector3();
-      if (Input.GetKey(KeyCode.W)){
-        p_Velocity += new Vector3(0, 0 , 1);
+      if (Input.GetKey(KeyCode.W)) {
+        p_Velocity += new Vector3(0, 0, 1);
       }
-      if (Input.GetKey(KeyCode.S)){
+      if (Input.GetKey(KeyCode.S)) {
         p_Velocity += new Vector3(0, 0, -1);
       }
-      if (Input.GetKey(KeyCode.A)){
+      if (Input.GetKey(KeyCode.A)) {
         p_Velocity += new Vector3(-1, 0, 0);
       }
-      if (Input.GetKey(KeyCode.D)){
+      if (Input.GetKey(KeyCode.D)) {
         p_Velocity += new Vector3(1, 0, 0);
       }
       return p_Velocity;
     }
-    
+
     public static float ClampAngle(float angle, float min, float max) {
       if (angle < MINIMUM_ANGLE) angle += MAXIMUM_ANGLE;
       if (angle > MAXIMUM_ANGLE) angle -= MAXIMUM_ANGLE;
-      return Mathf.Clamp (angle, min, max);
+      return Mathf.Clamp(angle, min, max);
     }
 
     private void XYMiddleMouseMovement() {
       if (Input.GetMouseButton(2)) {	// middle mouse button
-        mTransform.Translate(-(new Vector3(Input.GetAxis("Mouse X") * dragSpeed, Input.GetAxis("Mouse Y") * dragSpeed, 0)));
+        mTransform.Translate(-(new Vector3(Input.GetAxis("Mouse X") * dragSpeed * speedFactor, Input.GetAxis("Mouse Y") * dragSpeed * speedFactor, 0)));
       }
     }
 
@@ -113,8 +127,8 @@ namespace BTDebug.BTCamera {
       if ((mouseAxis < 0) || (mouseAxis > 0)) {
         zoomAmount += mouseAxis;
         zoomAmount = Mathf.Clamp(zoomAmount, -maxClamp, maxClamp);
-        float translate = Mathf.Min(Mathf.Abs(mouseAxis), maxClamp  - Mathf.Abs(zoomAmount));
-        mTransform.Translate(0, 0, (translate * rotSpeed  * Mathf.Sign(mouseAxis)) * 2f);
+        float translate = Mathf.Min(Mathf.Abs(mouseAxis), maxClamp - Mathf.Abs(zoomAmount));
+        mTransform.Translate(0, 0, (translate * (rotSpeed * speedFactor) * Mathf.Sign(mouseAxis)) * 2f);
       }
     }
   }
