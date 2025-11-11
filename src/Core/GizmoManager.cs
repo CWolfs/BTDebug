@@ -208,8 +208,7 @@ namespace BTDebug {
       placeholderPoint.transform.localPosition = Vector3.zero;
 
       Vector3 position = spawner.transform.position;
-      Vector3 hexPosition = hexGrid.GetClosestPointOnGrid(position);
-      placeholderPoint.transform.position = hexPosition;
+      placeholderPoint.transform.position = position;
 
       placeholderPoint.transform.localScale = new Vector3(100, 100, 100);
       placeholderPoint.GetComponent<Renderer>().sharedMaterial = spawnAreaMaterial;
@@ -240,8 +239,7 @@ namespace BTDebug {
       placeholderPoint.transform.localPosition = Vector3.zero;
 
       Vector3 position = target.transform.position;
-      Vector3 hexPosition = hexGrid.GetClosestPointOnGrid(position);
-      placeholderPoint.transform.position = hexPosition;
+      placeholderPoint.transform.position = position;
       placeholderPoint.transform.localScale = new Vector3(10, 10, 10);
 
       if (type == SpawnType.PLAYER_MECH) {
@@ -262,9 +260,9 @@ namespace BTDebug {
 
     private void EnableBoundary() {
       GameObject chunkBoundaryRect = GetBoundaryChunk().gameObject;
-      GameObject boundary = chunkBoundaryRect.transform.Find("EncounterBoundaryRect").gameObject;
       EncounterBoundaryChunkGameLogic chunkBoundaryLogic = chunkBoundaryRect.GetComponent<EncounterBoundaryChunkGameLogic>();
-      EncounterBoundaryRectGameLogic boundaryLogic = boundary.GetComponent<EncounterBoundaryRectGameLogic>();
+      EncounterBoundaryRectGameLogic boundaryLogic = chunkBoundaryRect.GetComponentInChildren<EncounterBoundaryRectGameLogic>();
+      GameObject boundary = boundaryLogic.gameObject;
 
       Rect boundaryRec = boundaryLogic.GetRect();
       Rect usableBoundary = boundaryRec.GenerateUsableBoundary();
@@ -274,8 +272,15 @@ namespace BTDebug {
       placeholderPoint.transform.parent = boundary.transform;
 
       Vector3 centre = (Vector3)ReflectionHelper.GetPrivateField(boundaryLogic, "rectCenter");
-      placeholderPoint.transform.position = new Vector3(centre.x + ((boundaryRec.width - usableBoundary.width) / 2f), centre.y, centre.z - ((boundaryRec.height - usableBoundary.height) / 2f));
-      placeholderPoint.transform.localScale = new Vector3(usableBoundary.width, boundaryRec.height, usableBoundary.height);
+      // usableBoundary is in corner coordinates (0,0 = bottom-left of full map), convert to world/center coordinates
+      // World coordinates are centered on the full 2048x2048 map (offset = 2048/2 = 1024)
+      Vector3 usableBoundaryCentre = new Vector3(
+        (usableBoundary.x + usableBoundary.width / 2f) - 1024f,
+        centre.y,
+        (usableBoundary.y + usableBoundary.height / 2f) - 1024f
+      );
+      placeholderPoint.transform.position = usableBoundaryCentre;
+      placeholderPoint.transform.localScale = new Vector3(usableBoundary.width, usableBoundary.height, usableBoundary.height);
 
       placeholderPoint.GetComponent<Renderer>().sharedMaterial = boundaryMaterial;
 
