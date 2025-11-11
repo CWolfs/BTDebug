@@ -272,8 +272,15 @@ namespace BTDebug {
       placeholderPoint.transform.parent = boundary.transform;
 
       Vector3 centre = (Vector3)ReflectionHelper.GetPrivateField(boundaryLogic, "rectCenter");
-      placeholderPoint.transform.position = new Vector3(centre.x + ((boundaryRec.width - usableBoundary.width) / 2f), centre.y, centre.z - ((boundaryRec.height - usableBoundary.height) / 2f));
-      placeholderPoint.transform.localScale = new Vector3(usableBoundary.width, boundaryRec.height, usableBoundary.height);
+      // usableBoundary is in corner coordinates (0,0 = bottom-left of full map), convert to world/center coordinates
+      // World coordinates are centered on the full 2048x2048 map (offset = 2048/2 = 1024)
+      Vector3 usableBoundaryCentre = new Vector3(
+        (usableBoundary.x + usableBoundary.width / 2f) - 1024f,
+        centre.y,
+        (usableBoundary.y + usableBoundary.height / 2f) - 1024f
+      );
+      placeholderPoint.transform.position = usableBoundaryCentre;
+      placeholderPoint.transform.localScale = new Vector3(usableBoundary.width, usableBoundary.height, usableBoundary.height);
 
       placeholderPoint.GetComponent<Renderer>().sharedMaterial = boundaryMaterial;
 
